@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout-main}">
+<body>
+    <main layout:fragment="body">
+
+    <h2>Knowledge Sharing - Posts</h2>
+        <div class="post-summary">
+            <p>
+                Total Posts:
+                <span th:text="${result.totalElements}">0</span>
+            </p>
+        </div>
+        <div class="post-list" th:each="post : ${result.dtoList}">
+            <div class="post-card">
+                <h3 th:text="${post.title}">Understanding Dependency Injection </h3>
+                <span th:if="${post.commentCount > 0}" class="comment-badge">
+                    💬 <span th:text="${post.commentCount}"></span>
+                </span>
+                <p class="meta">
+                    <span th:text="${post.categoryName}">Category</span>
+                    &nbsp;・&nbsp;
+                    <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Apr 24, 2024</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="pagination" th:if="${result.totalPages > 1}">
+            <a class="page-btn" th:if="${result.prev}" th:href="@{/posts(page=${result.startPage-1}, size=${result.size})}">«</a>
+            <a class="page-btn"
+                    th:href="@{/posts(page=${pageNum}, size=${result.size})}"
+                    th:each="pageNum : ${#numbers.sequence(result.startPage, result.endPage)}"
+                    th:text="${pageNum}"
+                    th:classappend="${pageNum == currentPage} ? 'active' : ''">
+            </a>
+            <a class="page-btn" th:if="${result.next}" th:href="@{/posts(page=${result.endPage+1}, size=${result.size})}">»</a>
+        </div>
+
+    </main>
+</body>
+</html>

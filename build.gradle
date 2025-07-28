@@ -1,0 +1,62 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    //id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+}
+
+group = 'dev.mkhub'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // ✅ QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+}
+
+// ✅ Q 클래스 경로 추가 (Gradle 8+ 방식)
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/querydsl"
+        }
+    }
+}
+
+// ✅ 컴파일 시 Q 클래스 생성 위치 설정 (annotationProcessor용)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += [
+            "-s", file("$buildDir/generated/querydsl").toString()
+    ]
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileJava {	options.compilerArgs << '-parameters'}
+
