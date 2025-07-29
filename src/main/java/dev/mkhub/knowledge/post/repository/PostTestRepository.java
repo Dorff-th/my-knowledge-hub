@@ -60,10 +60,9 @@ public interface PostTestRepository extends JpaRepository<Post, Long> {
         FROM Post p
         LEFT OUTER JOIN  p.category c       
         LEFT OUTER JOIN  p.member m
-        WHERE p.member.id = :memberId
         ORDER BY p.id desc    
         """)
-    List<PostDTO> findBbyAllOrderByIdWithDTO(@Param("memberId") Long memberId);
+    List<PostDTO> findBbyAllOrderByIdWithDTO();
 
 
 

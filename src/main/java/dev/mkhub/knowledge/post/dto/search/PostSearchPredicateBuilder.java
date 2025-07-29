@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostSearchPredicateBuilder {
 
-    public BooleanBuilder createSearchBuilder(Long memberId, PostSearchCondition condition) {
+    public BooleanBuilder createSearchBuilder(PostSearchCondition condition) {
         QPost post = QPost.post;
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(post.member.id.eq(memberId));
+        //builder.and(post.member.id.eq(memberId));
 
         if (condition.getSearchType() != null && condition.getKeyword() != null) {
             switch (condition.getSearchType()) {

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class PostService {
     private final PostRepositoryCustom postRepositoryCustom;
 
     //post 페이징(목록)
-    public PageResponseDTO<PostDTO> getPostList(Long memberId, PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
+    public PageResponseDTO<PostDTO> getPostList(PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
 
         Pageable pageable = PageRequest.of(
                 requestDTO.getPage() - 1,
@@ -34,7 +35,7 @@ public class PostService {
                 Sort.by(Sort.Direction.valueOf(requestDTO.getDirection().toString()), requestDTO.getSort()));
 
 
-        Page<PostDTO> result =  postRepositoryCustom.findAllByMemberId(memberId, postSearchCondition, pageable);
+        Page<PostDTO> result =  postRepositoryCustom.findAllByMemberId(postSearchCondition, pageable);
         List<PostDTO> dtoList = result.getContent();
 
         return new PageResponseDTO<>(requestDTO, result.getTotalElements(), dtoList, 10);
@@ -42,8 +43,9 @@ public class PostService {
     }
 
     //post 상세
-    public PostDetailDTO getPost(Long postId, Long memberId) {
+    public Optional<PostDetailDTO> getPost(Long id) {
 
-        return postRepositoryCustom.findByIdAndMemberId(postId, memberId);
+        return postRepositoryCustom.findByIdAndMemberId(id);
+
     }
 }

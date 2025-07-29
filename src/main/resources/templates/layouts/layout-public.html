@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - Knowledge">Knowledge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/blog-style.css}">
+    <link rel="stylesheet" th:href="@{/css/toast.css}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body th:data-msg="${returnMsg}">
+<header class="header">
+    <nav>
+        <ul class="nav">
+            <!-- 추후 스타일 및 UI 재조정 예정 -->
+            <li><a href="/posts">Blog-list</a></li>
+        </ul>
+    </nav>
+    <a href="/login">
+        <button class="logout-btn" type="button">Login</button>
+    </a>
+</header>
+
+<main class="container" layout:fragment="body">
+    <!-- 본문 내용이 여기에 삽입됨 -->
+</main>
+
+<script th:src="@{/js/toast.js}"></script>
+<script>
+    const msg = document.body.dataset.msg;
+    if (msg) toast.success(msg);
+</script>
+<!-- 개별 페이지 전용 script 삽입용 -->
+<div layout:fragment="page-script"></div>
+</body>
+</html>

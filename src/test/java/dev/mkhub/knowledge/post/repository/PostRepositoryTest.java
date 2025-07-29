@@ -120,9 +120,8 @@ class PostRepositoryTest {
     @DisplayName("Post 전체 목록 조회 : JPQL Porjection interface 사용")
     void testFindAllPostWithDTO() {
 
-        Long memberId = 23L;
 
-        List<PostDTO> posts = postRepository.findBbyAllOrderByIdWithDTO(memberId);
+        List<PostDTO> posts = postRepository.findBbyAllOrderByIdWithDTO();
 
         posts.forEach(dto->{System.out.println(dto);});
     }

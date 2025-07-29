@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout-main}">
+      layout:decorate="~{${#authorization.expression('isAuthenticated()')} ?
+                          'layouts/layout-main' :
+                          'layouts/layout-public'}">
 <body>
 <section layout:fragment="body">
     <div class="container">

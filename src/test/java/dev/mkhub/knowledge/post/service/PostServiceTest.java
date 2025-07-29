@@ -26,7 +26,7 @@ class PostServiceTest {
     @Autowired
     private PostRepositoryCustom postRepositoryCustom;
 
-    //@Test
+    @Test
     @DisplayName("Post 페이징 처리 테스트 with QueryDSL")
     void testPostsPaging() {
 
@@ -42,7 +42,7 @@ class PostServiceTest {
                 .build();
 
         PageRequestDTO pageRequestDTO = new PageRequestDTO(1, 10, sortColumn, sortDirection);
-        PageResponseDTO<PostDTO> result = postService.getPostList(memberId, postSearchCondition, pageRequestDTO);
+        PageResponseDTO<PostDTO> result = postService.getPostList(postSearchCondition, pageRequestDTO);
 
         System.out.println(result.getTotalElements());
         result.getDtoList().forEach(postDTO -> System.out.println(postDTO));
@@ -53,10 +53,11 @@ class PostServiceTest {
     @Test
     @DisplayName("Post 상세 내용 조회 테스트")
     void testPostDetail() {
-        Long postId = 80L;
-        Long memberId = 23L;
+        Long id = 80L;
 
-        PostDetailDTO postDetailDTO = postRepositoryCustom.findByIdAndMemberId(postId, memberId);
+
+        PostDetailDTO postDetailDTO = postRepositoryCustom.findByIdAndMemberId(id)
+                .orElseThrow(()->new IllegalArgumentException("ERROR"));
 
         System.out.println(postDetailDTO);
     }

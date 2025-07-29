@@ -16,6 +16,7 @@ public class GlobalModelAdvice {
             String returnMsg = switch (msg) {
                 case "loginSuccess" -> "로그인에 성공하였습니다.";
                 case "logoutSuccess" -> "로그아웃에 성공하였습니다.";
+                case "error" -> "로그인에 실패하였습니다.";
                 default -> "기본 msg!";
             };
 

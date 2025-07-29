@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
@@ -26,13 +27,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private final PostSearchPredicateBuilder createSearchBuilder;
 
     @Override
-    public Page<PostDTO> findAllByMemberId(Long memberId, PostSearchCondition condition, Pageable pageable) {
+    public Page<PostDTO> findAllByMemberId(PostSearchCondition condition, Pageable pageable) {
         QPost post = QPost.post;
         QMember member = QMember.member;
         QCategory category = QCategory.category;
         QComment comment = QComment.comment;
 
-        BooleanBuilder builder = createSearchBuilder.createSearchBuilder(memberId, condition);
+        BooleanBuilder builder = createSearchBuilder.createSearchBuilder(condition);
 
         List<PostDTO> content = queryFactory
                 .select(Projections.constructor(PostDTO.class,
@@ -64,7 +65,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public PostDetailDTO findByIdAndMemberId(Long postId, Long memberId) {
+    public Optional<PostDetailDTO> findByIdAndMemberId(Long postId) {
 
         QPost post = QPost.post;
         QMember member = QMember.member;
@@ -84,10 +85,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .from(post)
                 .leftJoin(post.category, category)
                 .leftJoin(post.member, member)
-                .where(post.id.eq(postId).and(member.id.eq(memberId)))
+                .where(post.id.eq(postId))
                 .fetchOne();
 
-        return content;
+        return Optional.ofNullable(content);
     }
 }
 
