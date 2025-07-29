@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .failureUrl("/login?msg=error")
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?msg=logoutSuccess")
+                        .logoutSuccessUrl("/posts?msg=logoutSuccess")
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedPage("/access-denied") // 🔒 여기 추가

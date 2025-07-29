@@ -20,7 +20,7 @@ public class GlobalModelAdvice {
                 default -> "기본 msg!";
             };
 
-            model.addAttribute("returnMsg", msg);
+            model.addAttribute("returnMsg", returnMsg);
         }
 
     }

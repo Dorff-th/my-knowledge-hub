@@ -33,29 +33,29 @@
     import { showSuccessToast, showErrorToast } from /*[[@{/js/toast.js}]]*/ '';
 
     document.addEventListener("DOMContentLoaded", () => {
-    // 폼 전송 로딩
-    document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', () => {
-        showLoading();
-      });
-    });
-
-    // 링크 이동 로딩
-    document.querySelectorAll('a').forEach(link => {
-      const href = link.getAttribute('href');
-      if (
-        href &&
-        !href.startsWith('#') &&
-        !href.startsWith('javascript:') &&
-        !link.hasAttribute('download') &&
-        link.target !== '_blank'
-      ) {
-        link.addEventListener('click', () => {
-          showLoading();
+        // 폼 전송 로딩
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                showLoading();
+            });
         });
-      }
+
+        // 링크 이동 로딩
+        document.querySelectorAll('a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (
+            href &&
+            !href.startsWith('#') &&
+            !href.startsWith('javascript:') &&
+            !link.hasAttribute('download') &&
+            link.target !== '_blank'
+        ) {
+            link.addEventListener('click', () => {
+                showLoading();
+            });
+          }
+        });
     });
-  });
 
     const msg = document.body.dataset.msg;
     if(msg) {

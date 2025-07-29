@@ -28,31 +28,38 @@
 </main>
 <script type="module" th:inline="javascript">
     import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+    import { showSuccessToast, showErrorToast } from /*[[@{/js/toast.js}]]*/ '';
 
     document.addEventListener("DOMContentLoaded", () => {
-    // 폼 전송 로딩
-    document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', () => {
-        showLoading();
-      });
+        // 폼 전송 로딩
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+            showLoading();
+            });
+        });
+
+        // 링크 이동 로딩
+        document.querySelectorAll('a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (
+                href &&
+                !href.startsWith('#') &&
+                !href.startsWith('javascript:') &&
+                !link.hasAttribute('download') &&
+                link.target !== '_blank'
+            ) {
+                link.addEventListener('click', () => {
+                showLoading();
+                });
+            }
+        });
     });
 
-    // 링크 이동 로딩
-    document.querySelectorAll('a').forEach(link => {
-      const href = link.getAttribute('href');
-      if (
-        href &&
-        !href.startsWith('#') &&
-        !href.startsWith('javascript:') &&
-        !link.hasAttribute('download') &&
-        link.target !== '_blank'
-      ) {
-        link.addEventListener('click', () => {
-          showLoading();
-        });
-      }
-    });
-  });
+    //로그인 한 사용자가 로그아웃할때 목록으로 이동 그리고 '로그아웃에 성공하였습니다' 메시지 토스트
+    const msg = document.body.dataset.msg;
+    if(msg) showSuccessToast(msg)
+
+
 </script>
 <!-- 개별 페이지 전용 script 삽입용 -->
 <div layout:fragment="page-script"></div>
