@@ -13,7 +13,7 @@
             </p>
         </div>
         <div class="post-list" th:each="post : ${result.dtoList}">
-            <div class="post-card">
+            <div class="post-card" th:attr="data-id=${post.id}">
                 <h3 th:text="${post.title}">Understanding Dependency Injection </h3>
                 <span th:if="${post.commentCount > 0}" class="comment-badge">
                     💬 <span th:text="${post.commentCount}"></span>
@@ -36,7 +36,16 @@
             </a>
             <a class="page-btn" th:if="${result.next}" th:href="@{/posts(page=${result.endPage+1}, size=${result.size})}">»</a>
         </div>
-
     </main>
+    <div layout:fragment="page-script">
+        <script>
+            document.querySelectorAll(".post-card").forEach(card => {
+                card.addEventListener("click", function () {
+                    const postId = this.dataset.id;
+                    window.location.href = `/posts/${postId}`;
+                });
+            });
+        </script>
+    </div>
 </body>
 </html>

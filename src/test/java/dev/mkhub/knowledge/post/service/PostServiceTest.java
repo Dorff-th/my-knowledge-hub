@@ -1,11 +1,13 @@
-package dev.mkhub.knowlegde.service;
+package dev.mkhub.knowledge.post.service;
 
 import dev.mkhub.knowledge.post.dto.PostDTO;
+import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.page.PageRequestDTO;
 import dev.mkhub.knowledge.post.dto.page.PageResponseDTO;
 import dev.mkhub.knowledge.post.dto.page.SortDirection;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.repository.PostRepository;
+import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
 import dev.mkhub.knowledge.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,9 @@ class PostServiceTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private PostRepositoryCustom postRepositoryCustom;
 
     //@Test
     @DisplayName("Post 페이징 처리 테스트 with QueryDSL")
@@ -44,5 +49,17 @@ class PostServiceTest {
 
 
     }
+
+    @Test
+    @DisplayName("Post 상세 내용 조회 테스트")
+    void testPostDetail() {
+        Long postId = 80L;
+        Long memberId = 23L;
+
+        PostDetailDTO postDetailDTO = postRepositoryCustom.findByIdAndMemberId(postId, memberId);
+
+        System.out.println(postDetailDTO);
+    }
+
 
 }

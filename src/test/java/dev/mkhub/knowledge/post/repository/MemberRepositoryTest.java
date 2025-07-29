@@ -1,4 +1,4 @@
-package dev.mkhub.knowlegde.repository;
+package dev.mkhub.knowledge.post.repository;
 
 import dev.mkhub.knowledge.domain.Member;
 import dev.mkhub.knowledge.member.repository.MemberRepository;

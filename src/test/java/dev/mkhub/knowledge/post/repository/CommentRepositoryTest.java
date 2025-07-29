@@ -4,6 +4,7 @@ import dev.mkhub.knowledge.domain.Comment;
 import dev.mkhub.knowledge.domain.Member;
 import dev.mkhub.knowledge.domain.Post;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
+import dev.mkhub.knowledge.post.dto.CommentResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ class CommentRepositoryTest {
 
     private Random random = new Random();
 
-    @Test
+    //@Test
     @DisplayName("comment dummy 데이터 insert")
     void insertDummyComments() {
         List<Long> memberIds = List.of(22L, 23L, 24L);
@@ -61,5 +62,15 @@ class CommentRepositoryTest {
         }
 
         System.out.println(numberOfComments + "개의 댓글이 저장되었습니다.");
+    }
+
+    @Test
+    @DisplayName("특정 게시물(Post)의 코멘트 목록을 조회한다.")
+    void testFindAllByPostId() {
+        Long postId = 70L;
+
+        List<CommentResponseDTO> result = commentRepository.findAllByPostId(postId);
+
+        result.forEach(dto->System.out.println(dto));
     }
 }

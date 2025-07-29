@@ -1,9 +1,10 @@
-package dev.mkhub.knowlegde.repository;
+package dev.mkhub.knowledge.post.repository;
 
 import dev.mkhub.knowledge.domain.Category;
 import dev.mkhub.knowledge.domain.Member;
 import dev.mkhub.knowledge.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
+import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.projection.PostSummaryProjection;
 import dev.mkhub.knowledge.post.repository.CategoryRepository;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
@@ -33,6 +34,7 @@ class PostRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
 
     //@Test
     void testInsertDummyPosts() {
@@ -116,7 +118,7 @@ class PostRepositoryTest {
 
     @Test
     @DisplayName("Post 전체 목록 조회 : JPQL Porjection interface 사용")
-    void testFineAllPostWithDTO() {
+    void testFindAllPostWithDTO() {
 
         Long memberId = 23L;
 
@@ -124,4 +126,6 @@ class PostRepositoryTest {
 
         posts.forEach(dto->{System.out.println(dto);});
     }
+
+
 }

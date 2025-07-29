@@ -1,9 +1,11 @@
 package dev.mkhub.knowledge.post.service;
 
+import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.page.PageRequestDTO;
 import dev.mkhub.knowledge.post.dto.page.PageResponseDTO;
+import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +22,10 @@ import java.util.List;
 @Slf4j
 public class PostService {
 
-    //private final PostRepository postRepository;
+    private final PostRepository postRepository;
     private final PostRepositoryCustom postRepositoryCustom;
 
+    //post 페이징(목록)
     public PageResponseDTO<PostDTO> getPostList(Long memberId, PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
 
         Pageable pageable = PageRequest.of(
@@ -38,4 +41,9 @@ public class PostService {
 
     }
 
+    //post 상세
+    public PostDetailDTO getPost(Long postId, Long memberId) {
+
+        return postRepositoryCustom.findByIdAndMemberId(postId, memberId);
+    }
 }

@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.mkhub.knowledge.domain.QComment;
+import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.search.PostSearchPredicateBuilder;
 import dev.mkhub.knowledge.domain.QCategory;
@@ -60,6 +61,33 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public PostDetailDTO findByIdAndMemberId(Long postId, Long memberId) {
+
+        QPost post = QPost.post;
+        QMember member = QMember.member;
+        QCategory category = QCategory.category;
+
+        PostDetailDTO content = queryFactory
+                .select(Projections.constructor(PostDetailDTO.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.createdAt,
+                        post.updatedAt,
+                        category.name,
+                        member.id,
+                        member.username
+                ))
+                .from(post)
+                .leftJoin(post.category, category)
+                .leftJoin(post.member, member)
+                .where(post.id.eq(postId).and(member.id.eq(memberId)))
+                .fetchOne();
+
+        return content;
     }
 }
 
