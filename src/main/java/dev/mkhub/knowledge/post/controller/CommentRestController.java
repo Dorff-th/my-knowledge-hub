@@ -27,6 +27,12 @@ public class CommentRestController {
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<List<CommentResponseDTO>> comments(@AuthenticationPrincipal MemberDetails memberDetails, @PathVariable("postId") Long postId) {
 
+        /*try {
+            Thread.sleep(2000); // 2초 동안 강제 지연
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }*/
+
         List<CommentResponseDTO> comments = commentService.getCommentList(postId);
 
         return ResponseEntity.ok(comments);

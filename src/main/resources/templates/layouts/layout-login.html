@@ -4,17 +4,36 @@
 <head>
     <title layout:title-pattern="$CONTENT_TITLE - Knowledge">Knowledge 로그인</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/spinner.css}">
     <link rel="stylesheet" th:href="@{/css/toast.css}">
 </head>
 <body th:data-msg="${returnMsg}">
+<div id="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+</div>
 <section layout:fragment="body">
     <!-- 본문 내용이 여기에 삽입됨 -->
 </section>
+<script type="module" th:inline="javascript">
+    import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+    import { showSuccessToast, showErrorToast } from /*[[@{/js/toast.js}]]*/ '';
 
-<script th:src="@{/js/toast.js}"></script>
-<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("form").forEach(form => {
+            form.addEventListener("submit", () => {
+            showLoading(); // 폼 전송 시 로딩 오버레이 표시
+        });
+        });
+    });
+
     const msg = document.body.dataset.msg;
-    if (msg) toast.success(msg);
+    if(msg) {
+        if(msg === 'error') {
+            showErrorToast('로그인에 실패하였습니다.')
+        } else {
+            showSuccessToast(msg)
+        }
+    }
 </script>
 </body>
 </html>

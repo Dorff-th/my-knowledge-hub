@@ -35,6 +35,12 @@ public class PostController {
                          @ModelAttribute PostSearchCondition postSearchCondition,
                          Model model) {
 
+        /*try {
+            Thread.sleep(2000); // 2초 동안 강제 지연
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }*/
+
         PageResponseDTO<PostDTO> result = postService.getPostList(postSearchCondition, pageRequestDTO);
 
         model.addAttribute("result", result);

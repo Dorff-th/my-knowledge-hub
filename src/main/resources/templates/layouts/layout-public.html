@@ -5,6 +5,7 @@
     <title layout:title-pattern="$CONTENT_TITLE - Knowledge">Knowledge</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/blog-style.css}">
+    <link rel="stylesheet" th:href="@{/css/spinner.css}">
     <link rel="stylesheet" th:href="@{/css/toast.css}">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -25,11 +26,33 @@
 <main class="container" layout:fragment="body">
     <!-- 본문 내용이 여기에 삽입됨 -->
 </main>
+<script type="module" th:inline="javascript">
+    import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
 
-<script th:src="@{/js/toast.js}"></script>
-<script>
-    const msg = document.body.dataset.msg;
-    if (msg) toast.success(msg);
+    document.addEventListener("DOMContentLoaded", () => {
+    // 폼 전송 로딩
+    document.querySelectorAll('form').forEach(form => {
+      form.addEventListener('submit', () => {
+        showLoading();
+      });
+    });
+
+    // 링크 이동 로딩
+    document.querySelectorAll('a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (
+        href &&
+        !href.startsWith('#') &&
+        !href.startsWith('javascript:') &&
+        !link.hasAttribute('download') &&
+        link.target !== '_blank'
+      ) {
+        link.addEventListener('click', () => {
+          showLoading();
+        });
+      }
+    });
+  });
 </script>
 <!-- 개별 페이지 전용 script 삽입용 -->
 <div layout:fragment="page-script"></div>

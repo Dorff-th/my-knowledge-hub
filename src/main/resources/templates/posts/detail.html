@@ -60,20 +60,30 @@
     </div>
 </main>
 <div layout:fragment="page-script">
-    <script>
+    <script type="module" th:inline="javascript">
+        import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+
         const postId = document.getElementById("post-detail").dataset.postId;
 
-        fetch(`/api/posts/${postId}/comments`)
-          .then(res => res.json())
-          .then(comments => {
-            const container = document.getElementById("comment-container");
-            container.innerHTML = comments.map(c => `
-              <div class="comment-box">
-                <p><strong>${c.username}</strong> · ${c.createdAt}</p>
-                <p>${c.content}</p>
-              </div>
-            `).join('');
-          });
+        async function fetchData() {
+            showLoading();
+            try {
+                fetch(`/api/posts/${postId}/comments`)
+                    .then(res => res.json())
+                    .then(comments => {
+                        const container = document.getElementById("comment-container");
+                        container.innerHTML = comments.map(c => `
+                        <div class="comment-box">
+                        <p><strong>${c.username}</strong> · ${c.createdAt}</p>
+                        <p>${c.content}</p>
+                        </div>
+                    `).join('');
+                });
+            } finally {
+                hideLoading();
+            }
+        }
+        fetchData();
     </script>
 </div>
 </body>
