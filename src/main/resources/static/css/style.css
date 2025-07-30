@@ -110,3 +110,34 @@ textarea {
     font-weight: bold;
   }
 </style>
+
+/* 검색 목록  스타일 */
+<style>
+.search-result-card {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+}
+
+.search-summary-text {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.search-meta {
+  font-size: 0.9em;
+  color: #666;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.search-meta a {
+  text-decoration: none;
+  color: #333;
+}
+</style>
+

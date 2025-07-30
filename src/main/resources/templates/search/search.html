@@ -14,15 +14,19 @@
             <span th:text="${result.totalElements}">0</span>
         </p>
     </div>
-    <div class="post-list" th:each="search : ${result.dtoList}">
-        <div class="post-card" th:attr="data-id=${search.postId}">
-            <h3 th:utext="${search.highlightedTitle}">Understanding Dependency Injection </h3>
 
-            <p class="meta">
-                <span th:text="${search.categoryName}">Category</span>
-                &nbsp;・&nbsp;
-                <span th:text="${#temporals.format(search.createdAt, 'MMM dd, yyyy')}">Apr 24, 2024</span>
-            </p>
+    <div class="search-result-card" th:each="search : ${result.dtoList}">
+        <!-- 📌 Summary 영역 -->
+        <div class="search-summary-text" th:attr="data-id=${search.postId}">
+            <p th:utext="${search.highlightedTitle}">요약 텍스트</p> <!-- <mark> 포함 가능 -->
+        </div>
+
+        <!-- 📎 메타정보 영역 -->
+        <div class="search-meta">
+            <span class="category">📁 <span th:text="${search.categoryName}">카테고리</span></span>
+            <span class="title">📝 <a th:href="@{/posts/{id}(id=${search.postId})}" th:text="${search.title}">제목</a></span>
+            <span class="author">✍ <span th:text="${search.writerName}">작성자</span></span>
+            <span class="date">🕒 <span th:text="${#temporals.format(search.createdAt, 'MMM dd, yyyy')}">날짜</span></span>
         </div>
     </div>
 
