@@ -12,12 +12,22 @@
 </head>
 <body th:data-msg="${returnMsg}">
 <header class="header">
-    <nav>
+    <nav class="nav-container">
         <ul class="nav">
             <!-- 추후 스타일 및 UI 재조정 예정 -->
             <li><a href="/posts">Blog-list</a></li>
         </ul>
+
+        <!-- 🔍 검색 폼 추가 -->
+        <form class="search-form" th:action="@{/search}" method="get">
+            <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요" />
+            <button type="submit" class="search-btn">
+                🔍
+            </button>
+        </form>
     </nav>
+
+    <!-- 로그인 버튼 -->
     <a href="/login">
         <button class="logout-btn" type="button">Login</button>
     </a>

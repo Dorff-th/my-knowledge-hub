@@ -58,66 +58,6 @@ textarea {
     border-radius: 4px;
 }
 
-/* Task List */
-.task-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-}
-
-.inline-form {
-    display: inline;
-}
-
-.task-item button {
-    background-color: #2e7dff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.task-item button:hover {
-    background-color: #1e5cd8;
-}
-
-.task-item.completed .task-title,
-.task-item.completed .task-desc {
-    text-decoration: line-through;
-    color: gray;
-}
-
-
-
-.task-item.completed {
-    background-color: #f0f0f0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    overflow: hidden;
-    max-height: 1000px;
-    opacity: 1;
-}
-
-.task-item.completed.hide {
-    max-height: 0;
-    opacity: 0;
-    padding: 0;
-    margin: 0;
-}
-
-
-
-@media (max-width: 600px) {
-    .task-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-
 
 /* Responsive */
 @media (max-width: 600px) {
@@ -132,3 +72,35 @@ textarea {
         align-items: flex-start;
     }
 }
+
+
+<style>
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .search-input {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .search-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .search-btn:hover {
+    opacity: 0.7;
+  }
+</style>

@@ -13,11 +13,18 @@
 <body th:data-msg="${returnMsg}">
 <header class="header">
     <h1 class="logo">MyKnowledgeHub(<span th:text="${#authentication.name}">사용자</span>)</h1>
-    <nav>
+    <nav class="nav-container">
         <ul class="nav">
             <li><a href="/posts">Blog-list</a></li>
             <li><a href="#">Dashboard</a></li>
         </ul>
+        <!-- 🔍 검색 폼 추가 -->
+        <form class="search-form" th:action="@{/search}" method="get">
+            <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요" />
+            <button type="submit" class="search-btn">
+                🔍
+            </button>
+        </form>
     </nav>
     <a href="/logout">
         <button class="logout-btn" type="submit">Logout</button>
