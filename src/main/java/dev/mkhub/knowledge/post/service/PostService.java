@@ -3,8 +3,8 @@ package dev.mkhub.knowledge.post.service;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.PostDTO;
-import dev.mkhub.knowledge.post.dto.page.PageRequestDTO;
-import dev.mkhub.knowledge.post.dto.page.PageResponseDTO;
+import dev.mkhub.knowledge.common.dto.PageRequestDTO;
+import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class PostService {
                 Sort.by(Sort.Direction.valueOf(requestDTO.getDirection().toString()), requestDTO.getSort()));
 
 
-        Page<PostDTO> result =  postRepositoryCustom.findAllByMemberId(postSearchCondition, pageable);
+        Page<PostDTO> result =  postRepositoryCustom.findAll(postSearchCondition, pageable);
         List<PostDTO> dtoList = result.getContent();
 
         return new PageResponseDTO<>(requestDTO, result.getTotalElements(), dtoList, 10);
@@ -45,7 +45,7 @@ public class PostService {
     //post 상세
     public Optional<PostDetailDTO> getPost(Long id) {
 
-        return postRepositoryCustom.findByIdAndMemberId(id);
+        return postRepositoryCustom.findById(id);
 
     }
 }

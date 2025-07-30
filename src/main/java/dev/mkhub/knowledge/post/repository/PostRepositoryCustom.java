@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface PostRepositoryCustom {
 
     //Post 목록 페이징 메서드
-    Page<PostDTO> findAllByMemberId(PostSearchCondition condition, Pageable pageable);
+    Page<PostDTO> findAll(PostSearchCondition condition, Pageable pageable);
 
     // Post 상세 내용 조회 메서드
-    Optional<PostDetailDTO> findByIdAndMemberId(Long id);
+    Optional<PostDetailDTO> findById(Long id);
 
 }

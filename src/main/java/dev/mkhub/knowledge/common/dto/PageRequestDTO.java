@@ -1,4 +1,4 @@
-package dev.mkhub.knowledge.post.dto.page;
+package dev.mkhub.knowledge.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,5 +30,10 @@ public class PageRequestDTO {
                 this.size,
                 Sort.by(this.direction.toString(), this.sort)
         );
+    }
+
+    //MyBatis 에서 페이지 번호 - index는 0부터 시작
+    public int getOffset() {
+        return (page - 1) * size;
     }
 }

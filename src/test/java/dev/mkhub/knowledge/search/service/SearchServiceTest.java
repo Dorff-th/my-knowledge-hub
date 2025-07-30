@@ -1,5 +1,7 @@
 package dev.mkhub.knowledge.search.service;
 
+import dev.mkhub.knowledge.common.dto.PageRequestDTO;
+import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.search.dto.SearchResultDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +19,19 @@ class SearchServiceTest {
     private SearchService service;
 
     @Test
-    @DisplayName("검색 쿼리 동작 여부 확인 - 동일 id값을 가진 post 제목 중복 제거 테스트")
+    @DisplayName("검색 쿼리 동작 여부 확인 - 동일 id값을 가진 post 제목 중복 제거 테스트 with paging")
     void findPostByKeywordMerge() {
 
         String keyword = "API";
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .build();
 
-        List<SearchResultDTO> searchResult = service.search(keyword);
+        PageResponseDTO<SearchResultDTO> searchResult = service.searchWithPaging(keyword, pageRequestDTO);
+        System.out.println("검색된 row 개수 " + searchResult.getTotalElements());
 
-        searchResult.forEach(result -> System.out.println(result));
+        searchResult.getDtoList().forEach(result -> System.out.println(result));
 
     }
 

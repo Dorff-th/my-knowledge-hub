@@ -103,4 +103,10 @@ textarea {
   .search-btn:hover {
     opacity: 0.7;
   }
+
+  /* 검색 키워드 형광색 표시*/
+  mark {
+    background-color: yellow;
+    font-weight: bold;
+  }
 </style>

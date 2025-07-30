@@ -20,7 +20,7 @@
 
         <!-- 🔍 검색 폼 추가 -->
         <form class="search-form" th:action="@{/search}" method="get">
-            <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요" />
+            <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요" th:value="${param.keyword}"/>
             <button type="submit" class="search-btn">
                 🔍
             </button>

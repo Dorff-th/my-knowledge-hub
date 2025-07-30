@@ -1,4 +1,4 @@
-package dev.mkhub.knowledge.post.dto.page;
+package dev.mkhub.knowledge.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.data.domain.Sort;

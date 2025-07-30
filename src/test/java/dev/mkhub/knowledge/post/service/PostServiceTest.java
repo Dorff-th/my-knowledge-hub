@@ -2,13 +2,12 @@ package dev.mkhub.knowledge.post.service;
 
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
-import dev.mkhub.knowledge.post.dto.page.PageRequestDTO;
-import dev.mkhub.knowledge.post.dto.page.PageResponseDTO;
-import dev.mkhub.knowledge.post.dto.page.SortDirection;
+import dev.mkhub.knowledge.common.dto.PageRequestDTO;
+import dev.mkhub.knowledge.common.dto.PageResponseDTO;
+import dev.mkhub.knowledge.common.dto.SortDirection;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
-import dev.mkhub.knowledge.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,7 @@ class PostServiceTest {
         Long id = 80L;
 
 
-        PostDetailDTO postDetailDTO = postRepositoryCustom.findByIdAndMemberId(id)
+        PostDetailDTO postDetailDTO = postRepositoryCustom.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("ERROR"));
 
         System.out.println(postDetailDTO);

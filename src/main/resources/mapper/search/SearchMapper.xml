@@ -33,10 +33,51 @@
         WHERE
             p.title LIKE CONCAT('%', #{keyword}, '%')
             OR p.content LIKE CONCAT('%', #{keyword}, '%')
-            OR c.name LIKE CONCAT('%', #{keyword}, '%')
-            OR m.username LIKE CONCAT('%', #{keyword}, '%')
             OR cm.content LIKE CONCAT('%', #{keyword}, '%')
-            OR cm_writer.username LIKE CONCAT('%', #{keyword}, '%')
-            ORDER BY p.created_at DESC
+        ORDER BY p.created_at DESC
     </select>
+
+    <!--
+        검색결과 목록 페이징
+         page = 현재 페이지 번호
+         size = 페이지당 표시할 row 개수
+    -->
+    <select id="searchPostsByKeywordWithPaging" resultMap="SearchResultMap">
+        SELECT
+            p.id,
+            p.title,
+            p.content,
+            p.created_at,
+            m.username,
+            c.name AS categoryName,
+            cm.content AS commentContent,
+            cm_writer.username AS commentWriter
+        FROM post p
+            LEFT JOIN category c ON p.category_id = c.id
+            LEFT JOIN member m ON p.member_id = m.id
+            LEFT JOIN comment cm ON cm.post_id = p.id
+            LEFT JOIN member cm_writer ON cm.member_id = cm_writer.id
+        WHERE
+            p.title LIKE CONCAT('%', #{keyword}, '%')
+         OR p.content LIKE CONCAT('%', #{keyword}, '%')
+         OR cm.content LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY p.created_at DESC
+        LIMIT #{pageRequest.size} OFFSET #{pageRequest.offset}
+    </select>
+
+    <!-- 검색결과 totalCount -->
+    <select id="searchPostsByKeywordCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM post p
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN member m ON p.member_id = m.id
+        LEFT JOIN comment cm ON cm.post_id = p.id
+        LEFT JOIN member cm_writer ON cm.member_id = cm_writer.id
+        WHERE
+            p.title LIKE CONCAT('%', #{keyword}, '%')
+         OR p.content LIKE CONCAT('%', #{keyword}, '%')
+         OR cm.content LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
 </mapper>

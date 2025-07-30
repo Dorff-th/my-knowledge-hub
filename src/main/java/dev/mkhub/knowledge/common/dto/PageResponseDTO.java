@@ -1,4 +1,4 @@
-package dev.mkhub.knowledge.post.dto.page;
+package dev.mkhub.knowledge.common.dto;
 
 import lombok.Data;
 

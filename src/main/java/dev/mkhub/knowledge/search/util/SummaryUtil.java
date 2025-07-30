@@ -1,7 +1,10 @@
 package dev.mkhub.knowledge.search.util;
 
+import java.util.regex.Pattern;
+
 public class SummaryUtil {
 
+    //검색 키워드 중심으로 내용 요약
     public static String extractSummary(String text, String keyword, int radius) {
         if (text == null || keyword == null) return null;
 
@@ -20,6 +23,12 @@ public class SummaryUtil {
         if (end < text.length()) sb.append("...");
 
         return sb.toString();
+    }
+
+    //검색 결과에서 검색 키워드 하이라이트 표시
+    public static String highlightKeyword(String text, String keyword) {
+        if (text == null || keyword == null) return text;
+        return text.replaceAll("(?i)(" + Pattern.quote(keyword) + ")", "<mark>$1</mark>");
     }
 }
 

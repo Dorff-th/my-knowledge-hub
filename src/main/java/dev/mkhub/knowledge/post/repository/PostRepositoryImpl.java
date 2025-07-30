@@ -27,7 +27,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private final PostSearchPredicateBuilder createSearchBuilder;
 
     @Override
-    public Page<PostDTO> findAllByMemberId(PostSearchCondition condition, Pageable pageable) {
+    public Page<PostDTO> findAll(PostSearchCondition condition, Pageable pageable) {
         QPost post = QPost.post;
         QMember member = QMember.member;
         QCategory category = QCategory.category;
@@ -65,7 +65,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Optional<PostDetailDTO> findByIdAndMemberId(Long postId) {
+    public Optional<PostDetailDTO> findById(Long postId) {
 
         QPost post = QPost.post;
         QMember member = QMember.member;

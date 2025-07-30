@@ -29,14 +29,17 @@ spring:
 server:
   port: 8080
 
-logging:
-  level:
-    org:
-      springframework:
-        security:
-          web: error
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: dev.mkhub.knowledge.search.dto
+
+
+logging:
+  level:
+    root: info
+    # MyBatis Mapper 로그
+    dev.mkhub.knowledge.search.mapper: DEBUG       # ← 너의 Mapper 패키지명
+    org.apache.ibatis: DEBUG                # MyBatis 내부 SQL 로그
+    org.mybatis: DEBUG                      # MyBatis 스프링 연동 로그
 
