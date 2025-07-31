@@ -15,7 +15,7 @@ public class MemberController {
     @GetMapping("/login")
     public String loginForm(@RequestParam(name ="msg", required = false) String msg, Model model) {
         model.addAttribute("msg", msg);
-        return "login";
+        return "login_tobe";
     }
 
     @GetMapping("/")

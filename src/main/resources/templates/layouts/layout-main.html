@@ -3,32 +3,48 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title layout:title-pattern="$CONTENT_TITLE - Knowledge">Knowledge</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/blog-style.css}">
     <link rel="stylesheet" th:href="@{/css/spinner.css}">
     <link rel="stylesheet" th:href="@{/css/toast.css}">
+    <link rel="stylesheet" th:href="@{/css/output.css}">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
-<body th:data-msg="${returnMsg}">
-<header class="header">
-    <h1 class="logo">MyKnowledgeHub(<span th:text="${#authentication.name}">사용자</span>)</h1>
-    <nav class="nav-container">
-        <ul class="nav">
-            <li><a href="/posts">Blog-list</a></li>
-            <li><a href="#">Dashboard</a></li>
-        </ul>
-        <!-- 🔍 검색 폼 추가 -->
-        <form class="search-form" th:action="@{/search}" method="get">
-            <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요" th:value="${param.keyword}"/>
-            <button type="submit" class="search-btn">
+<body class="bg-gray-100 text-gray-900" th:data-msg="${returnMsg}">
+<header class="bg-white shadow">
+    <div class="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-3">
+
+        <!-- 좌측: 로고 + 사이트명 -->
+        <div class="flex items-center space-x-2">
+            <a href="/" class="text-xl font-bold text-gray-800 hover:text-blue-600">MKHub(<span th:text="${#authentication.name}">사용자</span>)</a>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <nav className="flex flex-wrap gap-2 justify-center">
+                <ul class="space-y-4">
+                    <li class="px-3 py-1 border border-gray-500 text-gray-500 rounded hover:bg-blue-50 text-sm"><a href="/posts">Blog-list</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 가운데: 검색창 -->
+        <form th:action="@{/search}" method="get" class="flex items-center w-full max-w-md mx-4">
+            <input
+                    type="text"
+                    name="keyword"
+                    class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                    placeholder="Search..."
+                    th:value="${param.keyword}"
+            />
+            <button type="submit" class="h-full px-4 py-2 bg-gray-300 text-white rounded-r-md hover:bg-gray-500 flex items-center justify-center">
                 🔍
             </button>
         </form>
-    </nav>
-    <a href="/logout">
-        <button class="logout-btn" type="submit">Logout</button>
-    </a>
+
+        <!-- 우측: 로그인/회원가입 -->
+        <div class="flex items-center space-x-3">
+            <a href="/logout" class="text-gray-600 hover:text-blue-500 text-sm">Logout</a>
+        </div>
+    </div>
 </header>
 
 <main class="container" layout:fragment="body">

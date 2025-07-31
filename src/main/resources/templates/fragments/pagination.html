@@ -1,14 +1,18 @@
 <!-- fragments/pagination.html -->
-<div class="pagination" th:fragment="paging(result, currentPage, queryString)">
-    <a class="page-btn" th:if="${result.prev}"
+<div class="flex items-center justify-center mt-10 gap-2"
+     th:fragment="paging(result, currentPage, queryString)">
+    <a class="px-3 py-2 rounded border bg-white text-gray-600 hover:bg-gray-100 transition"
+       th:if="${result.prev}"
        th:href="@{'/search?page=' + ${result.startPage - 1} + '&size=' + ${result.size} + ${queryString}}">«</a>
 
-    <a class="page-btn" th:each="pageNum : ${#numbers.sequence(result.startPage, result.endPage)}"
+    <a class="px-3 py-2 rounded border bg-white text-gray-600 hover:bg-gray-100 transition"
+       th:each="pageNum : ${#numbers.sequence(result.startPage, result.endPage)}"
        th:href="@{'/search?page=' + ${pageNum} + '&size=' + ${result.size} + ${queryString}}"
        th:text="${pageNum}"
-       th:classappend="${pageNum == currentPage} ? ' active' : ''">
+       th:classappend="${pageNum == currentPage} ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'">
     </a>
 
-    <a class="page-btn" th:if="${result.next}"
+    <a class="px-3 py-2 rounded border bg-white text-gray-600 hover:bg-gray-100 transition"
+       th:if="${result.next}"
        th:href="@{'/search?page=' + ${result.endPage + 1} + '&size=' + ${result.size} + ${queryString}}">»</a>
 </div>
