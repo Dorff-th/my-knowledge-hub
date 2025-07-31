@@ -7,6 +7,7 @@ import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.search.dto.SearchFilterDTO;
 import dev.mkhub.knowledge.search.dto.SearchResultDTO;
 import dev.mkhub.knowledge.search.service.SearchService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class SearchController {
     @GetMapping("")
     public String search(@ModelAttribute  SearchFilterDTO searchFilterDTO,
                          @ModelAttribute PageRequestDTO pageRequestDTO,
+                         HttpServletRequest request,    // pagination 템플릿 사용을 위해 필요
                          Model model) {
 
         //기본 검색결과
@@ -39,8 +42,14 @@ public class SearchController {
         //Category 목록 조회
         List<Category> categories = categoryService.findAllCategory();
         model.addAttribute("categories", categories);
-
         model.addAttribute("searchFilterDTO", searchFilterDTO);
+
+        String queryString = searchService.buildQueryString(searchFilterDTO);
+
+        model.addAttribute("queryString", queryString);
+
+        //Map<String, String[]> paramMap = request.getParameterMap(); // pagination 템플릿 사용을 위해 필요 (failed)
+        //model.addAttribute("paramMap", paramMap);
 
         return "search/search";
     }

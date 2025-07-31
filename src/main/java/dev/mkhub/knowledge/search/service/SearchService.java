@@ -11,6 +11,8 @@ import dev.mkhub.knowledge.search.util.SummaryUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -94,5 +96,25 @@ public class SearchService {
         return new PageResponseDTO<>(pageRequestDTO, totalCount, SearchPostMerger.deduplicateByPostId(withSummary), 10);
 
     }
+
+    //검색 조건을 유지하기 위한 쿼리스트링 빌드
+    public String buildQueryString(SearchFilterDTO dto) {
+        StringBuilder sb = new StringBuilder();
+
+        if (dto.getKeyword() != null && !dto.getKeyword().isBlank()) {
+            sb.append("&keyword=").append(URLEncoder.encode(dto.getKeyword(), StandardCharsets.UTF_8));
+        }
+        if (dto.getCategoryId() != null && dto.getCategoryId() > 0) {
+            sb.append("&categoryId=").append(dto.getCategoryId());
+        }
+        if (Boolean.TRUE.equals(dto.getTitleChecked())) sb.append("&titleChecked=true");
+        if (Boolean.TRUE.equals(dto.getContentChecked())) sb.append("&contentChecked=true");
+        if (Boolean.TRUE.equals(dto.getCommentChecked())) sb.append("&commentChecked=true");
+        if (dto.getStartDate() != null) sb.append("&startDate=").append(dto.getStartDate());
+        if (dto.getEndDate() != null) sb.append("&endDate=").append(dto.getEndDate());
+
+        return sb.toString();
+    }
+
 
 }
