@@ -8,6 +8,51 @@
 <main layout:fragment="body">
 
     <h2>Knowledge - Search Result </h2>
+
+    <form th:action="@{/search}" method="get" class="search-filter-box" style="border: 1px solid #ddd; padding: 16px; margin-bottom: 20px;">
+        <input type="hidden" name="keyword" th:value="${searchFilterDTO.keyword}"> <!-- 상단 header 에서 입력한 검색 키워드 유지 -->
+        <!-- 카테고리 (드롭다운) -->
+        <label for="categoryId">▼ 카테고리</label>
+        <select id="categoryId" name="categoryId">
+            <option value="0">-- 전체 --</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:text="${category.name}">
+            </option>
+        </select>
+
+        <!-- 체크박스: 제목, 내용, 덧글 -->
+        <label>
+            <input type="checkbox" name="titleChecked"
+                   th:checked="${searchFilterDTO.titleChecked}"> 제목
+        </label>
+        <label>
+            <input type="checkbox" name="contentChecked"
+                   th:checked="${searchFilterDTO.contentChecked}" checked> 내용
+        </label>
+        <label>
+            <input type="checkbox" name="commentChecked"
+                   th:checked="${searchFilterDTO.commentChecked}"> 덧글내용
+        </label>
+
+        <!-- 날짜 범위 -->
+        <div style="margin-top: 10px;">
+            글 작성일
+            <input type="date" name="startDate"
+                   th:value="${searchFilterDTO.startDate}">
+            ~
+            <input type="date" name="endDate"
+                   th:value="${searchFilterDTO.endDate}">
+        </div>
+
+        <!-- 검색 버튼 -->
+        <div style="margin-top: 10px;">
+            <button type="submit">검색</button>
+        </div>
+
+    </form>
+
+
     <div class="post-summary">
         <p>
             Total Posts:

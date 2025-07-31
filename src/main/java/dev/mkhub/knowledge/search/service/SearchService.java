@@ -2,6 +2,7 @@ package dev.mkhub.knowledge.search.service;
 
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
+import dev.mkhub.knowledge.search.dto.SearchFilterDTO;
 import dev.mkhub.knowledge.search.dto.SearchResultDTO;
 import dev.mkhub.knowledge.search.mapper.SearchMapper;
 import dev.mkhub.knowledge.search.util.SearchPostMerger;
@@ -47,6 +48,48 @@ public class SearchService {
         }
 
         int totalCount = searchMapper.searchPostsByKeywordCount(keyword);
+
+        return new PageResponseDTO<>(pageRequestDTO, totalCount, SearchPostMerger.deduplicateByPostId(withSummary), 10);
+
+    }
+
+    // 상세검색
+    public PageResponseDTO<SearchResultDTO> searchFilteredPostsWithPaging(SearchFilterDTO searchFilterDTO, PageRequestDTO pageRequestDTO) {
+
+        List<SearchResultDTO> rawList = searchMapper.searchFilteredPostsWithPaging(searchFilterDTO, pageRequestDTO);
+
+        String keyword = searchFilterDTO.getKeyword();
+
+        List<SearchResultDTO> withSummary = rawList.stream()
+                .map(dto -> SummaryProcessor.applySummaryAndMatch(dto, keyword))
+                .collect(Collectors.toList());
+
+        for(SearchResultDTO dto : withSummary) {
+            dto.setHighlightedTitle(SummaryUtil.highlightKeyword(dto.getSummary(), keyword));
+        }
+
+        int totalCount = searchMapper.searchFilteredPostsCount(searchFilterDTO);
+
+        return new PageResponseDTO<>(pageRequestDTO, totalCount, SearchPostMerger.deduplicateByPostId(withSummary), 10);
+
+    }
+
+    //테스트 하고 문제 없으면 위에 있는 메서드들은 미사용 처리 예정
+    public PageResponseDTO<SearchResultDTO> searchPostsUnified(SearchFilterDTO searchFilterDTO, PageRequestDTO pageRequestDTO) {
+
+        List<SearchResultDTO> rawList = searchMapper.searchPostsUnified(searchFilterDTO, pageRequestDTO);
+
+        String keyword = searchFilterDTO.getKeyword();
+
+        List<SearchResultDTO> withSummary = rawList.stream()
+                .map(dto -> SummaryProcessor.applySummaryAndMatch(dto, keyword))
+                .collect(Collectors.toList());
+
+        for(SearchResultDTO dto : withSummary) {
+            dto.setHighlightedTitle(SummaryUtil.highlightKeyword(dto.getSummary(), keyword));
+        }
+
+        int totalCount = searchMapper.searchPostsUnifiedCount(searchFilterDTO);
 
         return new PageResponseDTO<>(pageRequestDTO, totalCount, SearchPostMerger.deduplicateByPostId(withSummary), 10);
 
