@@ -46,10 +46,12 @@ public class SearchController {
 
         String queryString = searchService.buildQueryString(searchFilterDTO);
 
-        model.addAttribute("queryString", queryString);
+        model.addAttribute("queryString", queryString); // 페이지 이동시 검색 조건을 유지하기 위해 필요
 
-        //Map<String, String[]> paramMap = request.getParameterMap(); // pagination 템플릿 사용을 위해 필요 (failed)
-        //model.addAttribute("paramMap", paramMap);
+        //페이징 공통 Thymeleaf fragment 를 쓰기 위해 현재 URI 를 view에 넘김
+        String requestURI = request.getRequestURI();  // 예: "/search"
+        model.addAttribute("requestURI", requestURI);
+
 
         return "search/search";
     }

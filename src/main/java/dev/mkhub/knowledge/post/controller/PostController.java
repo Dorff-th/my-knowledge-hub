@@ -6,6 +6,7 @@ import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ public class PostController {
     public String posts( Pageable pageable,
                          PageRequestDTO pageRequestDTO,
                          @ModelAttribute PostSearchCondition postSearchCondition,
+                         HttpServletRequest request,
                          Model model) {
 
         /*try {
@@ -43,6 +45,11 @@ public class PostController {
 
         model.addAttribute("result", result);
         model.addAttribute("currentPage", pageRequestDTO.getPage());  // 여전히 1-based로 사용 가능
+
+        //페이징 공통 Thymeleaf fragment 를 쓰기 위해 현재 URI 를 view에 넘김
+        String requestURI = request.getRequestURI();  // 예: "/posts"
+        model.addAttribute("requestURI", requestURI);
+
 
         return "posts/list";
     }

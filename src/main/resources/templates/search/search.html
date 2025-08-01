@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <div th:replace="fragments/pagination :: paging(${result}, ${currentPage}, ${queryString})"></div>
+    <div th:replace="~{fragments/pagination :: paging(${result}, ${currentPage}, ${queryString}, ${requestURI})}"></div>
 </main>
 <div layout:fragment="page-script">
     <script>
