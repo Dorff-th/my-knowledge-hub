@@ -6,58 +6,57 @@
                           'layouts/layout-public'}">
 <body>
 <main layout:fragment="body" id="post-detail"  th:data-post-id="${post.id}">
-    <div class="post-detail-container">
-        <div class="post-header">
-            <p class="post-category" th:text="${post.categoryName}">Development</p>
-            <h1 class="post-title" th:text="${post.title}">Understanding Dependency Injection</h1>
-            <p class="post-meta"
+
+    <div class="max-w-3xl mx-auto space-y-4 my-8 mt-10">
+        <!-- 🔖 제목 카드 -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <span class="inline-block text-sm font-medium text-blue-600 mb-2" th:text="${post.categoryName}">Development</span>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800"
+                th:text="${post.title}">Understanding Dependency Injection</h1>
+            <p class="text-sm text-gray-500 mt-2"
                th:text="${post.username} + ' · ' + ${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">
                 By John Doe · Apr 24, 2024
             </p>
         </div>
 
-        <div class="post-content">
-            <p th:text="${post.content}">>
-                Dependency injection (DI) is a design pattern to assist pattern
-                provisioning lead in script benefits.
-            </p>
-
-            <!--<p>Learn about Dependency roles.</p>
-
-            <pre class="code-block">
-                @service
-                public class UserService {}
-            </pre>
-
-            <img class="post-image" src="/images/laptop.jpg" alt="Post image" />-->
-
-            <a href="/posts" class="back-button">← 목록으로</a>  <!-- 추후 스타일 및 위치 재조정 -->
-
-        </div>
-
-        <div class="comment-section">
-            <h3>Comments</h3>
-
-            <div class="comment-box">
-                <div class="comment-avatar">
-                    <!--<img src="/images/avatar.jpg" alt="avatar" /> 추후 코멘트작성자 프로필 아이콘 표출예정 -->
-                </div>
-
-                <!--<div class="comment-content">
-                    <p class="comment-author">Jane Smith <span class="comment-date">· Apr 24, 2024</span></p>
-                    <p class="comment-text">Great article. Thanks for the clear explanation.</p>
-                </div>-->
-                <!-- comment api 호출 영역-->
-                <div id="comment-container"></div>
-
+        <!-- 📌 본문 콘텐츠 카드 -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="prose prose-lg prose-gray max-w-none">
+                <p th:text="${post.content}">
+                    Dependency injection (DI) is a design pattern to assist pattern provisioning lead in script benefits.
+                </p>
             </div>
 
-            <form class="comment-form">
-                <textarea class="comment-input" placeholder="Add a comment..." required></textarea>
-                <button type="submit" class="comment-submit-btn">Submit</button>
+            <div class="mt-6">
+                <a href="/posts"
+                   class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
+                    ← 목록으로
+                </a>
+            </div>
+        </div>
+
+        <!-- 💬 댓글 영역 카드 -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">💬 댓글</h3>
+
+            <!-- 댓글 리스트 -->
+            <div id="comment-container" class="space-y-4">
+                <!-- 동적 댓글이 여기에 추가됩니다 -->
+            </div>
+
+            <!-- 댓글 입력 폼 -->
+            <form class="mt-6 space-y-4">
+      <textarea class="w-full border border-gray-300 rounded-md p-2 shadow-sm resize-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="댓글을 입력하세요..." required></textarea>
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+                    댓글 작성
+                </button>
             </form>
         </div>
+
     </div>
+
 </main>
 <div layout:fragment="page-script">
     <script type="module" th:inline="javascript">
