@@ -1,7 +1,8 @@
 <!-- fragments/pagination.html -->
 <div class="flex items-center justify-center mt-10 gap-2"
      th:fragment="paging(result, currentPage, queryString, requestURI)"
-     th:with="qs=(${queryString} ?: ''), path=${requestURI}">
+     th:with="qs=(${queryString} ?: ''), path=${requestURI}"
+     th:if="${result != null and result.totalElements > 0}">
 
     <a class="px-3 py-2 rounded border bg-white text-gray-600 hover:shadow-lg
               hover:-translate-y-2 hover:scale-[1.01]

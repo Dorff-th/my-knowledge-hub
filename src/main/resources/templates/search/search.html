@@ -9,49 +9,76 @@
 
     <h2>Knowledge - Search Result </h2>
 
-    <form th:action="@{/search}" method="get" class="search-filter-box" style="border: 1px solid #ddd; padding: 16px; margin-bottom: 20px;">
-        <input type="hidden" name="keyword" th:value="${searchFilterDTO.keyword}"> <!-- 상단 header 에서 입력한 검색 키워드 유지 -->
-        <!-- 카테고리 (드롭다운) -->
-        <label for="categoryId">▼ 카테고리</label>
-        <select id="categoryId" name="categoryId">
-            <option value="0"  th:selected="${searchFilterDTO.categoryId == 0}">-- 전체 --</option>
-            <option th:each="category : ${categories}"
-                    th:value="${category.id}"
-                    th:text="${category.name}"
-                    th:selected="${category.id == searchFilterDTO.categoryId}">
-            </option>
-        </select>
+    <form th:action="@{/search}" method="get" class="bg-white shadow-md rounded-lg p-6 mb-6 p-4">
 
-        <!-- 체크박스: 제목, 내용, 덧글 -->
-        <label>
-            <input type="checkbox" name="titleChecked"
-                   th:checked="${searchFilterDTO.titleChecked}"> 제목
-        </label>
-        <label>
-            <input type="checkbox" name="contentChecked"
-                   th:checked="${searchFilterDTO.contentChecked}" checked> 내용
-        </label>
-        <label>
-            <input type="checkbox" name="commentChecked"
-                   th:checked="${searchFilterDTO.commentChecked}"> 덧글내용
-        </label>
+        <!-- 검색 키워드 (숨김 필드) -->
+        <input type="hidden" name="keyword" th:value="${searchFilterDTO.keyword}">
+
+        <!-- 카테고리 드롭다운 -->
+        <div class="mb-4">
+            <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-2">📂 카테고리 선택</label>
+            <select id="categoryId" name="categoryId"
+                    class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="0" th:selected="${searchFilterDTO.categoryId == 0}">-- 전체 --</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"
+                        th:selected="${category.id == searchFilterDTO.categoryId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- 체크박스 영역 -->
+        <div class="mb-4">
+            <span class="block text-sm font-medium text-gray-700 mb-2">🔍 검색 범위</span>
+            <div class="flex flex-wrap gap-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="titleChecked"
+                           th:checked="${searchFilterDTO.titleChecked}"
+                           class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                    <span class="ml-2">제목</span>
+                </label>
+
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="contentChecked"
+                           th:checked="${searchFilterDTO.contentChecked}" checked
+                           class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                    <span class="ml-2">내용</span>
+                </label>
+
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="commentChecked"
+                           th:checked="${searchFilterDTO.commentChecked}"
+                           class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                    <span class="ml-2">덧글내용</span>
+                </label>
+            </div>
+        </div>
 
         <!-- 날짜 범위 -->
-        <div style="margin-top: 10px;">
-            글 작성일
-            <input type="date" name="startDate"
-                   th:value="${searchFilterDTO.startDate}">
-            ~
-            <input type="date" name="endDate"
-                   th:value="${searchFilterDTO.endDate}">
+        <div class="mb-4">
+            <span class="block text-sm font-medium text-gray-700 mb-2">📅 글 작성일</span>
+            <div class="flex items-center gap-2">
+                <input type="date" name="startDate"
+                       th:value="${searchFilterDTO.startDate}"
+                       class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <span>~</span>
+                <input type="date" name="endDate"
+                       th:value="${searchFilterDTO.endDate}"
+                       class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
         </div>
 
         <!-- 검색 버튼 -->
-        <div style="margin-top: 10px;">
-            <button type="submit">검색</button>
+        <div class="text-right">
+            <button type="submit"
+                    class="inline-block bg-blue-600 hover:bg-blue-700 text-black font-semibold py-2 px-4 rounded-md shadow transition duration-200">
+                검색 🔍
+            </button>
         </div>
 
     </form>
+
 
 
     <div class="post-summary">
@@ -61,21 +88,59 @@
         </p>
     </div>
 
-    <div class="search-result-card" th:each="search : ${result.dtoList}">
-        <!-- 📌 Summary 영역 -->
-        <div class="search-summary-text" th:attr="data-id=${search.postId}">
-            <p th:utext="${search.highlightedTitle}">요약 텍스트</p> <!-- <mark> 포함 가능 -->
-        </div>
+    <div class="max-w-5xl mx-auto space-y-2 p-4">
+        <div
+                class="bg-white shadow-md rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition transform duration-200"
+                th:each="search : ${result.dtoList}"
+        >
+            <!-- 📌 Summary 영역 -->
+            <div
+                    class="mb-3 border-b pb-2 cursor-pointer"
+                    th:attr="data-id=${search.postId}"
+            >
+                <p class="text-lg font-semibold text-gray-700" th:utext="${search.highlightedTitle}">
+                    요약 텍스트
+                </p>
+            </div>
 
-        <!-- 📎 메타정보 영역 -->
-        <div class="search-meta">
-            <span class="category">📁 <span th:text="${search.categoryName}">카테고리</span></span>
-            <span class="title">📝 <a th:href="@{/posts/{id}(id=${search.postId})}" th:text="${search.title}">제목</a></span>
-            <span class="author">✍ <span th:text="${search.writerName}">작성자</span></span>
-            <span class="date">🕒 <span th:text="${#temporals.format(search.createdAt, 'MMM dd, yyyy')}">날짜</span></span>
+            <!-- 📎 메타정보 영역 -->
+            <div class="flex flex-wrap gap-2 text-sm text-gray-500">
+            <span class="flex items-center gap-1">
+                📁
+                <span class="font-medium text-gray-600" th:text="${search.categoryName}">
+                    카테고리
+                </span>
+            </span>
+
+                <span class="flex items-center gap-1">
+                📝
+                <a
+                        th:href="@{/posts/{id}(id=${search.postId})}"
+                        class="hover:text-blue-600 font-medium"
+                        th:text="${search.title}"
+                >
+                    제목
+                </a>
+            </span>
+
+                <span class="flex items-center gap-1">
+                ✍
+                <span th:text="${search.writerName}">
+                    작성자
+                </span>
+            </span>
+
+                <span class="flex items-center gap-1">
+                🕒
+                <span th:text="${#temporals.format(search.createdAt, 'MMM dd, yyyy')}">
+                    날짜
+                </span>
+            </span>
+            </div>
         </div>
     </div>
 
+    <!-- 페이지네이션 -->
     <div th:replace="~{fragments/pagination :: paging(${result}, ${currentPage}, ${queryString}, ${requestURI})}"></div>
 </main>
 <div layout:fragment="page-script">
