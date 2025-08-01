@@ -23,7 +23,7 @@ public class SecurityConfig {
                         //.requestMatchers("/").hasAnyRole("USER", "ADMIN")
                         //.requestMatchers("/posts/**").hasAnyRole("USER", "ADMIN")
                         //.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/", "/posts", "/posts/**", "/api/posts/**", "/search/**").permitAll() // ✅ 공개
+                        .requestMatchers("/", "/posts", "/posts/**", "/api/**", "/search/**").permitAll() // ✅ 공개
                         .requestMatchers("/posts/write", "/posts/edit/**", "/api/comments/**").authenticated() // ✅ 로그인 필요
                         .anyRequest().authenticated()
                 )

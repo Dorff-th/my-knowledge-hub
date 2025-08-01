@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * 로그인 페이지에서 로그인 성공/실패에 대한 메시지를 반환하는 Advice
+ */
 @ControllerAdvice
 public class GlobalModelAdvice {
 

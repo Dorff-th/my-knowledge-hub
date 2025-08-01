@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/spinner.css}">
+    <link rel="stylesheet" th:href="@{/css/toast.css}">
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div id="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+</div>
+<div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
+        <form th:action="@{/register}" method="post" id="registerForm" class="space-y-4">
+
+            <!-- 이메일 (username) -->
+            <div>
+                <label for="email" class="block font-medium">이메일</label>
+                <div class="flex gap-2">
+                    <input type="email" name="username" id="email" required
+                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" id="checkUsername"
+                            class="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600">
+                        중복확인
+                    </button>
+                </div>
+            </div>
+
+            <!-- 닉네임 -->
+            <div>
+                <label for="nickname" class="block font-medium">닉네임</label>
+                <div class="flex gap-2">
+                    <input type="text" name="nickname" id="nickname" required
+                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" id="checkNickname"
+                            class="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600">
+                        중복확인
+                    </button>
+                </div>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div>
+                <label for="password" class="block font-medium">비밀번호</label>
+                <input type="password" name="password" id="password" required
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div>
+                <label for="confirmPassword" class="block font-medium">비밀번호 확인</label>
+                <input type="password" id="confirmPassword" required
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="pt-4">
+                <button type="submit"
+                        class="w-full py-2 bg-green-500 text-black rounded-md hover:bg-gray-600">
+                    회원가입
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module" th:inline="javascript">
+    import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+    import { showSuccessToast, showErrorToast, showInfoToast } from /*[[@{/js/toast.js}]]*/ '';
+    import { checkEmailDuplicate, checkNicknameDuplicate } from /*[[@{/js/duplicate-checker.js}]]*/ '';
+
+
+    // 이메일 중복 체크 이벤트 리스너
+    document.getElementById("checkUsername").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            //e.preventDefault(); // 제출 막기
+            showErrorToast('유효한 이메일 형식을 입력하세요.')
+            return;
+        }
+
+        try {
+            const res = await checkEmailDuplicate(email);
+             if (!res.ok) {
+                const error = await res.json();
+                showErrorToast(error.message); // 사용자에게 친절한 메시지 출력
+            } else {
+                const data = await res.json();
+                showInfoToast('사용가능 한 이메일입니다.');
+            }
+        } catch (e) {
+            showErrorToast(e.message)
+        }
+    });
+
+    // 닉네임 중복 체크 이벤트 리스너
+    document.getElementById("checkNickname").addEventListener("click", async () => {
+        const nickname = document.getElementById("nickname").value;
+
+        try {
+            const res = await checkNicknameDuplicate(nickname);
+            if (!res.ok) {
+                const error = await res.json();
+                showErrorToast(error.message) // 사용자에게 친절한 메시지 출력
+                document.getElementById("nickname").focus();
+            } else {
+                const data = await res.json();
+                showInfoToast('사용 가능한 닉네임입니다.');
+            }
+        } catch (e) {
+             showErrorToast(e.message)
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("registerForm");
+
+        form.addEventListener("submit", (e) => {
+            const email = document.getElementById("email").value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                e.preventDefault(); // 제출 막기
+                showErrorToast('유효한 이메일 형식을 입력하세요.')
+                return;
+            }
+
+            showLoading(); // 유효성 검사를 통과했을 때만 실행
+        });
+    });
+
+    //추후 입력폼의 input 에서 바로 유효성 체크 예정(비밀번호 규칙-아직 안정함, 이메일 형식 체크, 비밀번호 확인일치 등등)
+</script>
+</body>
+</html>

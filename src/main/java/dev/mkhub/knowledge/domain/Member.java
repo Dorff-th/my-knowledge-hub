@@ -29,6 +29,8 @@ public class Member {
 
     private String role;
 
+    private String nickname;
+
     private LocalDateTime createdAt;
 
     // 사용자(member) 1 : N 게시물(post)
