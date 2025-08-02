@@ -22,7 +22,7 @@ public class MemberApiController {
     public ResponseEntity<?> checkedEmail(@RequestParam("email") String email) {
 
         if (memberService.existsByEmail(email)) {
-            throw new DuplicateResourceException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateResourceException("Duplicate.email");
         }
         return ResponseEntity.ok(Map.of("duplicate", false));
     }
@@ -31,7 +31,7 @@ public class MemberApiController {
     public ResponseEntity<?> checkedNickname(@RequestParam("nickname") String nickname) {
 
         if (memberService.existsByNickname(nickname)) {
-            throw new DuplicateResourceException("이미 사용 중인 닉네임입니다.");
+            throw new DuplicateResourceException("Duplicate.nickname");
         }
         return ResponseEntity.ok(Map.of("duplicate", false));
     }

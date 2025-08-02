@@ -40,11 +40,12 @@ public class Member {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    public Member(String username, String email, String password, String role) {
+    public Member(String username, String email, String password, String role, String nickname) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.nickname = nickname;
     }
 
 }

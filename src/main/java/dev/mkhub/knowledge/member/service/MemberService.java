@@ -1,5 +1,6 @@
 package dev.mkhub.knowledge.member.service;
 
+import dev.mkhub.knowledge.member.dto.RegisterRequestDTO;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,4 +23,18 @@ public class MemberService {
     public boolean existsByNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
     };
+
+    //회원가입 처리
+    public void register(RegisterRequestDTO dto) {
+
+        //이메일과 닉네임 중복을 다시한번 확인한다.
+        if(memberRepository.existsByEmail(dto.getEmail())) {
+
+        }
+
+        if(memberRepository.existsByEmail(dto.getEmail())) {
+
+        }
+
+    }
 }

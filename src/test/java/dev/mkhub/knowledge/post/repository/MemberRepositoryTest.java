@@ -22,13 +22,13 @@ class MemberRepositoryTest {
     private PasswordEncoder passwordEncoder;
 
     //@Test
-    void testInsertDummyMembers() {
-        Member m1 = new Member("alice", "alice@test.com", passwordEncoder.encode("1234"), "USER");
-        Member m2 = new Member("bob", "bob@test.com", passwordEncoder.encode("1234"), "USER");
-        Member admin = new Member("admin", "admin@admintest.com", passwordEncoder.encode("1234"), "ADMIN");
-
-        memberRepository.saveAll(List.of(m1, m2, admin));
-
-        System.out.println("✅ Dummy members inserted");
-    }
+//    void testInsertDummyMembers() {
+//        Member m1 = new Member("alice", "alice@test.com", passwordEncoder.encode("1234"), "USER");
+//        Member m2 = new Member("bob", "bob@test.com", passwordEncoder.encode("1234"), "USER");
+//        Member admin = new Member("admin", "admin@admintest.com", passwordEncoder.encode("1234"), "ADMIN");
+//
+//        memberRepository.saveAll(List.of(m1, m2, admin));
+//
+//        System.out.println("✅ Dummy members inserted");
+//    }
 }
