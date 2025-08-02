@@ -29,7 +29,7 @@
                             class="px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 whitespace-nowrap">
                         중복확인
                     </button>
-                    <input type="hidden" id="emailChecked" name="emailChecked" value="false">
+                    <input type="hidden" id="emailChecked" name="emailChecked" th:field="*{emailChecked}" value="false">
 
                     <!-- ✅ 유효할 때 체크 아이콘 -->
                     <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
@@ -40,6 +40,7 @@
                 </div>
                 <!-- ❌ 에러 메시지 (flex 밖에 위치시켜야 세로 줄바꿈 방지됨) -->
                 <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('emailChecked')}" th:errors="*{emailChecked}"></p>
             </div>
 
             <!-- 닉네임 입력 -->
@@ -55,7 +56,7 @@
                             class="px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 whitespace-nowrap">
                         중복확인
                     </button>
-                    <input type="hidden" id="nicknameChecked" name="nickChecked" value="false">
+                    <input type="hidden" id="nicknameChecked" name="nickChecked" th:field="*{nicknameChecked}" value="false" >
 
                     <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
                          xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -64,6 +65,7 @@
                     </svg>
                 </div>
                 <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></p>
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('nicknameChecked')}" th:errors="*{nicknameChecked}"></p>
             </div>
 
             <!-- 비밀번호 -->
@@ -124,8 +126,6 @@
         const email = document.getElementById("email").value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        let emailChecked = document.getElementById("emailChecked").value;
-
         if (!emailRegex.test(email)) {
             showErrorToast('유효한 이메일 형식을 입력하세요.')
             return;
@@ -138,14 +138,14 @@
                 // 400 같은 응답일 때 에러 메시지 추출
                 const error = await res.json();
                 showErrorToast(error.error || error.message || '이메일 중복 확인 중 오류 발생');
-                emailChecked = 'false';
+                document.getElementById("emailChecked").value = 'false';
                 return;
             }
 
             const data = await res.json();
             if (data.duplicate === false) {
                 showInfoToast('사용 가능한 이메일입니다.');
-                emailChecked = 'true';
+                document.getElementById("emailChecked").value = 'true';
 
             }
         } catch (e) {
@@ -158,22 +158,20 @@
     document.getElementById("checkNickname").addEventListener("click", async () => {
         const nickname = document.getElementById("nickname").value;
 
-        let nicknameChecked = document.getElementById("nicknameChecked").value;
-
         try {
             const res = await checkNicknameDuplicate(nickname);
             if (!res.ok) {
                 // 400 같은 응답일 때 에러 메시지 추출
                 const error = await res.json();
                 showErrorToast(error.error || error.message || '닉네임 중복 확인 중 오류 발생');
-                nicknameChecked = 'false';
+                document.getElementById("nicknameChecked").value = 'false';
                 return;
             }
 
             const data = await res.json();
             if (data.duplicate === false) {
-                showInfoToast('사용 가능한 이메일입니다.');
-                nicknameChecked = 'true';
+                showInfoToast('사용 가능한 닉네임입니다.');
+                document.getElementById("nicknameChecked").value = 'true';
             }
         } catch (e) {
             showErrorToast('서버 오류: ' + (e.message || '알 수 없는 오류'));
@@ -209,7 +207,7 @@
         });
     });
 
-    //추후 입력폼의 input 에서 바로 유효성 체크 예정(비밀번호 규칙-아직 안정함, 이메일 형식 체크, 비밀번호 확인일치 등등)
+</script>
 </script>
 </body>
 </html>

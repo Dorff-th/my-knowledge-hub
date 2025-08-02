@@ -1,6 +1,7 @@
 package dev.mkhub.knowledge.member.controller;
 
 import dev.mkhub.knowledge.member.dto.RegisterRequestDTO;
+import dev.mkhub.knowledge.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import java.util.List;
 @Controller
 @Slf4j
 public class MemberViewController {
+
+    private  final MemberService memberService;
 
     //thymeleaf에서 th:data-msg 속성으로 받기위해 파라미터를 받고 이를 다시 model로 붙임
     // 만약 이렇게 안하고 <body th:data-msg="${parmm.msg}"> 이렇게 하면 보안정책에 걸림
@@ -45,14 +48,22 @@ public class MemberViewController {
     //회원가입 처리
     @PostMapping("/register")
     public String registerProcess(@Valid @ModelAttribute("registerRequestDTO") RegisterRequestDTO dto, BindingResult result, RedirectAttributes redirectAttributes) {
+
+        //log.info(dto.toString());
+
         if(result.hasErrors()) {
-            log.info(result.toString());
+            //log.info(result.toString());
             // 검증 실패 시, 오류 메시지와 입력값을 flash에 저장
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registerRequestDTO", result);
             redirectAttributes.addFlashAttribute("registerRequestDTO", dto);
 
             return "redirect:/register";  // PRG 패턴
         }
+
+        memberService.register(dto);
+
+        redirectAttributes.addFlashAttribute("returnMsg", "회원가입이 완료되었습니다. 로그인해 주세요!");
+
         return "redirect:/login";   // 회원가입이 끝나면 다시 로그인 페이지로 돌아감
     }
 

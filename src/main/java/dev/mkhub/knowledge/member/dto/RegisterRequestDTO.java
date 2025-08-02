@@ -20,8 +20,6 @@ import lombok.ToString;
 @PasswordMatch
 public class RegisterRequestDTO {
 
-    private String username;        // 이메일 값이 들어감.
-
     @NotBlank(message = "{NotBlank.registerRequestDTO.nickname}")
     @Size(min = 2, max = 20, message = "{Size.registerRequestDTO.nickname}")
     private String nickname;
@@ -31,7 +29,7 @@ public class RegisterRequestDTO {
     private String email;           // 물론 별도의 이메일 필드가 존재하므로 필요함.
 
     @NotBlank(message = "{NotBlank.registerRequestDTO.password}")
-    @Size(min = 8, message = "{sizePassword}")
+    @Size(min = 4, message = "{sizePassword}")
     private String password;
 
     @NotBlank(message = "{NotBlank.registerRequestDTO.confirmPassword}")
@@ -40,11 +38,7 @@ public class RegisterRequestDTO {
     @AssertTrue(message = "{email.checked}")
     private boolean emailChecked;       // email 중복사용 체크 여부
 
-    @AssertTrue@AssertTrue(message = "{nickname.checked}")
+    @AssertTrue(message = "{nickname.checked}")
     private boolean nicknameChecked;  // nickname 중복사용 체크 여부
 
-    //username에 email이 들어가도록 셋업
-    public void setUsername(String email) {
-        this.username = email;
-    }
 }

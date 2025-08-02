@@ -3,6 +3,8 @@ package dev.mkhub.knowledge.domain;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
 
     @Id
@@ -31,6 +34,8 @@ public class Member {
 
     private String nickname;
 
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     // 사용자(member) 1 : N 게시물(post)
@@ -40,8 +45,8 @@ public class Member {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    public Member(String username, String email, String password, String role, String nickname) {
-        this.username = username;
+    public Member(String email, String password, String role, String nickname) {
+        this.username = email;  // username에도 email 들어가게(email을 아이디 처럼 사용하고 싶어서)
         this.email = email;
         this.password = password;
         this.role = role;
