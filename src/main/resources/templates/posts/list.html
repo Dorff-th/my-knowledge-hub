@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{${#authorization.expression('isAuthenticated()')} ?
                           'layouts/layout-main' :
                           'layouts/layout-public'}">
@@ -37,6 +38,17 @@
                 <span th:text="${#temporals.format(post.createdAt, 'yyyy년 MM월 dd일')}">2025년 07월 26일</span>
             </p>
         </div>
+
+        <!-- 글쓰기 버튼 -->
+
+            <div class="flex justify-end mt-7" sec:authorize="isAuthenticated()">
+                <a th:href="@{/posts/edit}"
+                       class="bg-blue-500 text-white px-4 py-2 rounded">
+                    ✏ Editor
+                </a>
+            </div>
+
+
     </div>
 
         <!-- 페이지네이션 -->

@@ -20,11 +20,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test/**", "/error", "/register", "/login", "/css/**", "/js/**").permitAll()
-                        //.requestMatchers("/").hasAnyRole("USER", "ADMIN")
-                        //.requestMatchers("/posts/**").hasAnyRole("USER", "ADMIN")
-                        //.requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/posts/write", "/posts/edit/**", "/api/comments/**").hasAnyRole("USER", "ADMIN") // ✅ 로그인 필요
                         .requestMatchers("/", "/posts", "/posts/**", "/api/**", "/search/**").permitAll() // ✅ 공개
-                        .requestMatchers("/posts/write", "/posts/edit/**", "/api/comments/**").authenticated() // ✅ 로그인 필요
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

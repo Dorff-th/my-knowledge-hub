@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
@@ -66,4 +63,25 @@ public class PostController {
 
         return "posts/detail";
     }
+
+    //editor-demo
+    @GetMapping("/editor-demo")
+    public String showEditorDemo() {
+        return "posts/editor-demo"; // templates/post/editor-demo.html
+    }
+
+    @PostMapping("/editor-demo")
+    public String handleEditorSubmit(@RequestParam String title,
+                                     @RequestParam String content) {
+        System.out.println("제목: " + title);
+        System.out.println("내용: " + content); // 마크다운 텍스트
+
+        return "redirect:/posts/editor-demo"; // 다시 폼으로
+    }
+
+    @GetMapping("/edit")
+    public String showEditor() {
+        return "posts/editor";
+    }
+
 }
