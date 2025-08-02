@@ -39,6 +39,9 @@ dependencies {
 
     // ✅ MyBatis (데이터 검색 용도)
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+    //유효성 체크
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 // ✅ Q 클래스 경로 추가 (Gradle 8+ 방식)
