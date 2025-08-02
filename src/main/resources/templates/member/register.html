@@ -16,48 +16,88 @@
         <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
         <form th:action="@{/register}" method="post" id="registerForm"  th:object="${registerRequestDTO}" class="space-y-4">
 
-            <!-- 이메일 (username) -->
+            <!-- 이메일 입력 -->
             <div>
-                <label for="email" class="block font-medium">이메일</label>
-                <div class="flex gap-2">
-                    <input type="email" th:field="*{email}" required
-                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                <label for="email" class="block font-medium mb-1">이메일</label>
+                <div class="relative flex items-center gap-2">
+                    <input id="email" name="username" type="email"
+                           th:field="*{email}" required
+                           class="peer w-full px-4 py-2 border rounded-md transition-all duration-200 focus:outline-none
+                  focus:ring-2 focus:ring-blue-500 invalid:border-red-500 invalid:focus:ring-red-500"/>
+
                     <button type="button" id="checkUsername"
-                            class="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600">
+                            class="px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 whitespace-nowrap">
                         중복확인
                     </button>
+
+                    <!-- ✅ 유효할 때 체크 아이콘 -->
+                    <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                 </div>
+                <!-- ❌ 에러 메시지 (flex 밖에 위치시켜야 세로 줄바꿈 방지됨) -->
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
             </div>
 
-            <!-- 닉네임 -->
+            <!-- 닉네임 입력 -->
             <div>
-                <label for="nickname" class="block font-medium">닉네임</label>
-                <div class="flex gap-2">
-                    <input type="text" th:field="*{email}" required
-                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></div>
+                <label for="nickname" class="block font-medium mb-1">닉네임</label>
+                <div class="relative flex items-center gap-2">
+                    <input id="nickname" name="nickname" type="text"
+                           th:field="*{nickname}" required
+                           class="peer w-full px-4 py-2 border rounded-md transition-all duration-200 focus:outline-none
+                  focus:ring-2 focus:ring-blue-500 invalid:border-red-500 invalid:focus:ring-red-500"/>
+
                     <button type="button" id="checkNickname"
-                            class="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600">
+                            class="px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 whitespace-nowrap">
                         중복확인
                     </button>
+
+                    <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                 </div>
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></p>
             </div>
 
             <!-- 비밀번호 -->
             <div>
-                <label for="password" class="block font-medium">비밀번호</label>
-                <input type="password" th:field="*{password}" required
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                <label for="password" class="block font-medium mb-1">비밀번호</label>
+                <div class="relative flex items-center gap-2">
+                    <input id="password" name="password" type="password"
+                           th:field="*{password}" required
+                           class="peer w-full px-4 py-2 border rounded-md transition-all duration-200 focus:outline-none
+                           focus:ring-2 focus:ring-blue-500 invalid:border-red-500 invalid:focus:ring-red-500"/>
+
+                    <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
             </div>
 
             <!-- 비밀번호 확인 -->
             <div>
-                <label for="confirmPassword" class="block font-medium">비밀번호 확인</label>
-                <input type="password" th:field="*{confirmPassword}" required
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                <label for="confirmPassword" class="block font-medium mb-1">비밀번호</label>
+                <div class="relative flex items-center gap-2">
+                    <input id="confirmPassword" name="confirmPassword" type="password"
+                           th:field="*{confirmPassword}" required
+                           class="peer w-full px-4 py-2 border rounded-md transition-all duration-200 focus:outline-none
+                           focus:ring-2 focus:ring-blue-500 invalid:border-red-500 invalid:focus:ring-red-500"/>
+
+                    <svg class="absolute right-3 top-3 w-5 h-5 text-green-500 hidden peer-valid:inline-block"
+                         xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <p class="mt-1 text-sm text-red-500" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
             </div>
 
             <!-- 제출 버튼 -->
