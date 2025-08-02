@@ -124,6 +124,8 @@
         const email = document.getElementById("email").value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        let emailChecked = document.getElementById("emailChecked").value;
+
         if (!emailRegex.test(email)) {
             showErrorToast('유효한 이메일 형식을 입력하세요.')
             return;
@@ -131,18 +133,24 @@
 
         try {
             const res = await checkEmailDuplicate(email);
-            const isAvailable = res;
-            console.log(isAvailable);
-             if (!res.ok) {
+
+            if (!res.ok) {
+                // 400 같은 응답일 때 에러 메시지 추출
                 const error = await res.json();
-                showErrorToast(error.message); // 사용자에게 친절한 메시지 출력
-            } else {
-                const data = await res.json();
-                showInfoToast('사용가능 한 이메일입니다.');
+                showErrorToast(error.error || error.message || '이메일 중복 확인 중 오류 발생');
+                emailChecked = 'false';
+                return;
+            }
+
+            const data = await res.json();
+            if (data.duplicate === false) {
+                showInfoToast('사용 가능한 이메일입니다.');
+                emailChecked = 'true';
+
             }
         } catch (e) {
-            showErrorToast(e.message)
-            console.log(e.message);
+            showErrorToast('서버 오류: ' + (e.message || '알 수 없는 오류'));
+            console.error(e);
         }
     });
 
@@ -150,20 +158,26 @@
     document.getElementById("checkNickname").addEventListener("click", async () => {
         const nickname = document.getElementById("nickname").value;
 
+        let nicknameChecked = document.getElementById("nicknameChecked").value;
+
         try {
             const res = await checkNicknameDuplicate(nickname);
-            const isAvailable = await result.json();
-
             if (!res.ok) {
+                // 400 같은 응답일 때 에러 메시지 추출
                 const error = await res.json();
-                showErrorToast(error.message) // 사용자에게 친절한 메시지 출력
-                document.getElementById("nickname").focus();
-            } else {
-                const data = await res.json();
-                showInfoToast('사용 가능한 닉네임입니다.');
+                showErrorToast(error.error || error.message || '닉네임 중복 확인 중 오류 발생');
+                nicknameChecked = 'false';
+                return;
+            }
+
+            const data = await res.json();
+            if (data.duplicate === false) {
+                showInfoToast('사용 가능한 이메일입니다.');
+                nicknameChecked = 'true';
             }
         } catch (e) {
-             showErrorToast(e.message)
+            showErrorToast('서버 오류: ' + (e.message || '알 수 없는 오류'));
+            console.error(e);
         }
     });
 

@@ -31,7 +31,7 @@ public class RegisterRequestDTO {
     private String email;           // 물론 별도의 이메일 필드가 존재하므로 필요함.
 
     @NotBlank(message = "{NotBlank.registerRequestDTO.password}")
-    @Size(min = 8, message = "{Size.registerRequestDTO.password}")
+    @Size(min = 8, message = "{sizePassword}")
     private String password;
 
     @NotBlank(message = "{NotBlank.registerRequestDTO.confirmPassword}")
