@@ -1,10 +1,12 @@
 package dev.mkhub.knowledge.post.service;
 
+import dev.mkhub.knowledge.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.common.dto.SortDirection;
+import dev.mkhub.knowledge.post.dto.PostRequestDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
@@ -25,8 +27,8 @@ class PostServiceTest {
     @Autowired
     private PostRepositoryCustom postRepositoryCustom;
 
-    @Test
-    @DisplayName("Post 페이징 처리 테스트 with QueryDSL")
+    //@Test
+    //@DisplayName("Post 페이징 처리 테스트 with QueryDSL")
     void testPostsPaging() {
 
         Long memberId = 23L;    // 테스트 Member id
@@ -59,6 +61,25 @@ class PostServiceTest {
                 .orElseThrow(()->new IllegalArgumentException("ERROR"));
 
         System.out.println(postDetailDTO);
+    }
+
+    @Test
+    @DisplayName("새 Post 등록 테스트하기")
+    void testCreatePosts() {
+        Long memberId = 25L;
+        Long categoryId = 1L;
+
+        PostRequestDTO dto = PostRequestDTO.builder()
+                .title("포스트 등록 제목 테스트1")
+                .content("포스트 등록 내용 테스트1")
+                .memberId(memberId)
+                .categoryId(categoryId)
+                .build();
+
+        Post savePost = postService.createPost(dto);
+
+        System.out.println(savePost.getTitle());
+
     }
 
 

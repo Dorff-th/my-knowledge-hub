@@ -22,9 +22,10 @@
         <!-- 📌 본문 콘텐츠 카드 -->
         <div class="bg-white shadow-md rounded-lg p-6">
             <div class="prose prose-lg prose-gray max-w-none">
-                <p th:text="${post.content}">
+                <div id="viewer"></div>
+                <!--<p th:text="${post.content}">
                     Dependency injection (DI) is a design pattern to assist pattern provisioning lead in script benefits.
-                </p>
+                </p>-->
             </div>
 
             <div class="mt-6">
@@ -83,6 +84,13 @@
             }
         }
         fetchData();
+
+        const content = /*[[${post.content}]]*/ ""; // 마크다운 텍스트
+        const viewer = new toastui.Editor.factory({
+            el: document.querySelector('#viewer'),
+            viewer: true,
+            initialValue: content
+        });
     </script>
 </div>
 </body>

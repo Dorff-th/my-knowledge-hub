@@ -1,20 +1,28 @@
 package dev.mkhub.knowledge.post.controller;
 
+import dev.mkhub.knowledge.domain.Category;
+import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.member.security.MemberDetails;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
+import dev.mkhub.knowledge.post.dto.PostRequestDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
+import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -23,6 +31,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class PostController {
 
     private final PostService postService;
+
+    private final CategoryService categoryService;
 
     //게시글 목록
     @GetMapping("")
@@ -80,8 +90,24 @@ public class PostController {
     }
 
     @GetMapping("/edit")
-    public String showEditor() {
+    public String showEditor(Model model) {
+        List<Category> categories = categoryService.findAllCategory();
+        model.addAttribute("categories", categories);
         return "posts/editor";
+    }
+
+    @PostMapping("/edit")
+    public String createEditor(@AuthenticationPrincipal MemberDetails memberDetails, PostRequestDTO dto) {
+
+        Long memberId = memberDetails.getId();
+        dto.setMemberId(memberId);
+
+        System.out.println(dto);
+
+        Post savedPost = postService.createPost(dto);
+
+        return "redirect:/posts/" + savedPost.getId();
+
     }
 
 }

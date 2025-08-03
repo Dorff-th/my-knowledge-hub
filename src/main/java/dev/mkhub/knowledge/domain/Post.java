@@ -2,6 +2,8 @@ package dev.mkhub.knowledge.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
 
     @Id
@@ -25,7 +28,8 @@ public class Post {
 
     private int viewCount;
 
-    @Column(nullable = false)
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -52,6 +56,16 @@ public class Post {
         this.updatedAt = updatedAt;
         this.member = member;
         this.category = category;
+    }
+
+    //post 간단 save
+    public Post(String title, String content, Member member, Category category) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.category = category;
+        this.viewCount = 0;
+        this.createdAt = LocalDateTime.now();
     }
 
 }

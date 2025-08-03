@@ -1,10 +1,16 @@
 package dev.mkhub.knowledge.post.service;
 
+import dev.mkhub.knowledge.domain.Category;
+import dev.mkhub.knowledge.domain.Member;
+import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.member.repository.MemberRepository;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
+import dev.mkhub.knowledge.post.dto.PostRequestDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
+import dev.mkhub.knowledge.post.repository.CategoryRepository;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +32,9 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostRepositoryCustom postRepositoryCustom;
+
+    private final MemberRepository memberRepository;
+    private final CategoryRepository categoryRepository;
 
     //post 페이징(목록)
     public PageResponseDTO<PostDTO> getPostList(PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
@@ -47,5 +57,14 @@ public class PostService {
 
         return postRepositoryCustom.findById(id);
 
+    }
+
+    public Post createPost(PostRequestDTO dto) {
+        Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(()->new IllegalArgumentException("사용자가 없습니다."));
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->new IllegalArgumentException("카테고리가 없습니다."));
+
+        Post post = new Post(dto.getTitle(), dto.getContent(), member, category);
+
+        return postRepository.save(post);
     }
 }
