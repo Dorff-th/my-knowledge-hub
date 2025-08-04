@@ -1,7 +1,6 @@
 package dev.mkhub.knowledge.post.repository;
 
-import dev.mkhub.knowledge.domain.Category;
-import dev.mkhub.knowledge.post.repository.CategoryRepository;
+import dev.mkhub.knowledge.post.domain.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

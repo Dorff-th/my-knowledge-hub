@@ -1,5 +1,7 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.post.domain;
 
+import dev.mkhub.knowledge.attachment.domain.Attachment;
+import dev.mkhub.knowledge.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

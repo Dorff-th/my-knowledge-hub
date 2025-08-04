@@ -22,8 +22,9 @@ public class PostDTO {
     private String username;
     private LocalDateTime createdAt;
     private Long commentCount;
+    private String nickname;
 
-    public PostDTO(Long id, String title, LocalDateTime createdAt, String categoryName, String username,  Long memberId, Long commentCount) {
+    public PostDTO(Long id, String title, LocalDateTime createdAt, String categoryName, String username,  Long memberId, Long commentCount, String nickname) {
         this.id = id;
         this.title = title;
         this.createdAt = createdAt;
@@ -31,6 +32,7 @@ public class PostDTO {
         this.username = username;
         this.memberId = memberId;
         this.commentCount = commentCount;
+        this.nickname = nickname;
     }
 
     // Object[]로 받은 네이티브 쿼리 결과를 DTO로 변환하는 메서드

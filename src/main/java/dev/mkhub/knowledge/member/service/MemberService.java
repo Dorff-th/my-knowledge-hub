@@ -1,7 +1,7 @@
 package dev.mkhub.knowledge.member.service;
 
 import dev.mkhub.knowledge.common.exception.DuplicateResourceException;
-import dev.mkhub.knowledge.domain.Member;
+import dev.mkhub.knowledge.member.domain.Member;
 import dev.mkhub.knowledge.member.dto.RegisterRequestDTO;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

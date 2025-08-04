@@ -1,7 +1,8 @@
 package dev.mkhub.knowledge.post.dto.search;
 
 import com.querydsl.core.BooleanBuilder;
-import dev.mkhub.knowledge.domain.QPost;
+import dev.mkhub.knowledge.post.domain.QPost;
+import dev.mkhub.knowledge.post.domain.QPost;
 import org.springframework.stereotype.Component;
 
 @Component

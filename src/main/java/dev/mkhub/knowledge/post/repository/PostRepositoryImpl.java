@@ -3,13 +3,16 @@ package dev.mkhub.knowledge.post.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import dev.mkhub.knowledge.domain.QComment;
+import dev.mkhub.knowledge.member.domain.QMember;
+import dev.mkhub.knowledge.post.domain.QCategory;
+import dev.mkhub.knowledge.post.domain.QComment;
+import dev.mkhub.knowledge.post.domain.QPost;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.search.PostSearchPredicateBuilder;
-import dev.mkhub.knowledge.domain.QCategory;
-import dev.mkhub.knowledge.domain.QMember;
-import dev.mkhub.knowledge.domain.QPost;
+import dev.mkhub.knowledge.post.domain.QCategory;
+import dev.mkhub.knowledge.member.domain.QMember;
+import dev.mkhub.knowledge.post.domain.QPost;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +46,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         category.name,
                         member.username,
                         member.id,
-                        comment.count()
+                        comment.count(),
+                        member.nickname
                 ))
                 .from(post)
                 .leftJoin(post.category, category)
@@ -51,6 +55,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(comment).on(comment.post.eq(post))
                 .where(builder)
                 .groupBy(post.id, post.title, post.createdAt, category.name, member.username, member.id) // ✅ group by로 중복 제거
+                .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

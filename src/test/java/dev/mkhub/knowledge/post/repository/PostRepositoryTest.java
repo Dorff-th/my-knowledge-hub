@@ -1,14 +1,11 @@
 package dev.mkhub.knowledge.post.repository;
 
-import dev.mkhub.knowledge.domain.Category;
-import dev.mkhub.knowledge.domain.Member;
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Category;
+import dev.mkhub.knowledge.member.domain.Member;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
-import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.projection.PostSummaryProjection;
-import dev.mkhub.knowledge.post.repository.CategoryRepository;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
-import dev.mkhub.knowledge.post.repository.PostTestRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

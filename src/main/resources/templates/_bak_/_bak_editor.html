@@ -62,14 +62,13 @@
                     const formData = new FormData();
                     formData.append('image', blob); // blob은 File 객체
 
+                    //파일 업로드 기능 구현이후 테스트 예정
                     const response = await fetch('/api/images/upload', {
                         method: 'POST',
                         body: formData
                     });
 
                     const result = await response.json();
-                    console.log('result:', result);
-
                     callback(result.url); // 서버에서 받은 URL로 마크다운 이미지 삽입
                 }
             }

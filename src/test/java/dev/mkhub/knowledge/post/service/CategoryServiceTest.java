@@ -1,14 +1,12 @@
 package dev.mkhub.knowledge.post.service;
 
-import dev.mkhub.knowledge.domain.Category;
+import dev.mkhub.knowledge.post.domain.Category;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CategoryServiceTest {

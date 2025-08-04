@@ -1,11 +1,10 @@
 package dev.mkhub.knowledge.post.repository;
 
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.projection.PostSummaryProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

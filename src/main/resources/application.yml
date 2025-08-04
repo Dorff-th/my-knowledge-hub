@@ -52,3 +52,12 @@ logging:
   messages:
     basename: ValidationMessages
     encoding: UTF-8
+
+
+file:
+  upload:
+    path:
+      images:
+        base-dir : C:/devtools/zmylong/st_proejct/uploads/images/
+        public-url: /uploads/images/
+      attachments: C:/devtools/zmylong/st_proejct/uploads/attachments/

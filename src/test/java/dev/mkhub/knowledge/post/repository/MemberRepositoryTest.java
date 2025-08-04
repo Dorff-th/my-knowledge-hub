@@ -1,15 +1,11 @@
 package dev.mkhub.knowledge.post.repository;
 
-import dev.mkhub.knowledge.domain.Member;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @SpringBootTest
 @Transactional

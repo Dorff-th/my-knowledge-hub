@@ -1,6 +1,6 @@
 package dev.mkhub.knowledge.post.service;
 
-import dev.mkhub.knowledge.domain.Category;
+import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.post.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

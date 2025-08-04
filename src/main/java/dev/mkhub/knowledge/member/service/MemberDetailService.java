@@ -1,6 +1,6 @@
 package dev.mkhub.knowledge.member.service;
 
-import dev.mkhub.knowledge.domain.Member;
+import dev.mkhub.knowledge.member.domain.Member;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import dev.mkhub.knowledge.member.security.MemberDetails;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package dev.mkhub.knowledge.post.controller;
 
-import dev.mkhub.knowledge.domain.Category;
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Category;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.member.security.MemberDetails;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;

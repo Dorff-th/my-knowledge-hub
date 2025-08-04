@@ -1,6 +1,6 @@
 package dev.mkhub.knowledge.member.security;
 
-import dev.mkhub.knowledge.domain.Member;
+import dev.mkhub.knowledge.member.domain.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

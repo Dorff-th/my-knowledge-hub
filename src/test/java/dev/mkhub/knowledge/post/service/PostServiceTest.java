@@ -1,6 +1,6 @@
 package dev.mkhub.knowledge.post.service;
 
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;

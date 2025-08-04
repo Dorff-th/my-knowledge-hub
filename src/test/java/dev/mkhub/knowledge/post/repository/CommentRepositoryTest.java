@@ -1,8 +1,8 @@
 package dev.mkhub.knowledge.post.repository;
 
-import dev.mkhub.knowledge.domain.Comment;
-import dev.mkhub.knowledge.domain.Member;
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Comment;
+import dev.mkhub.knowledge.member.domain.Member;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import dev.mkhub.knowledge.post.dto.CommentResponseDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CommentRepositoryTest {

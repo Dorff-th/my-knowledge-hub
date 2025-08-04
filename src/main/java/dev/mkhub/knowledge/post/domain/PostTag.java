@@ -1,4 +1,4 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.post.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

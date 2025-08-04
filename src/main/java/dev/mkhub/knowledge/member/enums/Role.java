@@ -1,4 +1,4 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.member.enums;
 
 public enum Role {
     USER,

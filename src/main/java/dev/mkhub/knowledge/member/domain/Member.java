@@ -1,5 +1,7 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.member.domain;
 
+import dev.mkhub.knowledge.post.domain.Comment;
+import dev.mkhub.knowledge.post.domain.Post;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;

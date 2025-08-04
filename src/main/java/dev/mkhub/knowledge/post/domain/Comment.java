@@ -1,5 +1,6 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.post.domain;
 
+import dev.mkhub.knowledge.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

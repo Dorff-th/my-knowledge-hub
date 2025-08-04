@@ -2,7 +2,7 @@ package dev.mkhub.knowledge.search.controller;
 
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
-import dev.mkhub.knowledge.domain.Category;
+import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.search.dto.SearchFilterDTO;
 import dev.mkhub.knowledge.search.dto.SearchResultDTO;
@@ -14,10 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor

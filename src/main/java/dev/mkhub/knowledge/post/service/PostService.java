@@ -1,8 +1,8 @@
 package dev.mkhub.knowledge.post.service;
 
-import dev.mkhub.knowledge.domain.Category;
-import dev.mkhub.knowledge.domain.Member;
-import dev.mkhub.knowledge.domain.Post;
+import dev.mkhub.knowledge.post.domain.Category;
+import dev.mkhub.knowledge.member.domain.Member;
+import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.PostRequestDTO;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

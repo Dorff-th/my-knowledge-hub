@@ -1,21 +1,21 @@
-package dev.mkhub.knowledge.domain;
+package dev.mkhub.knowledge.post.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "category")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Tag {
-
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    public Category(String name) {
+        this.name = name;
+    }
 }

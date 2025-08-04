@@ -31,11 +31,16 @@
             >
             게시글 제목
             </h3>
-
+            <span th:if="${post.commentCount > 0}">
+                💬 <span th:text="${post.commentCount}"></span>
+            </span>
             <p class="text-sm text-gray-500">
                 <span th:text="${post.categoryName}">Category</span>
                 <span class="mx-1">·</span>
                 <span th:text="${#temporals.format(post.createdAt, 'yyyy년 MM월 dd일')}">2025년 07월 26일</span>
+                <span class="mx-1">·</span>
+                <span th:text="${post.nickname}"></span>
+
             </p>
         </div>
 

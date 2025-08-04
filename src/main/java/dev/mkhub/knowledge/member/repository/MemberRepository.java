@@ -1,6 +1,6 @@
 package dev.mkhub.knowledge.member.repository;
 
-import dev.mkhub.knowledge.domain.Member;
+import dev.mkhub.knowledge.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
