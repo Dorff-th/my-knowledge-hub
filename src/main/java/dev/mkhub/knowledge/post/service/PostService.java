@@ -1,5 +1,6 @@
 package dev.mkhub.knowledge.post.service;
 
+import dev.mkhub.knowledge.attachment.repository.AttachmentRepository;
 import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.member.domain.Member;
 import dev.mkhub.knowledge.post.domain.Post;
@@ -35,6 +36,8 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
 
+    private final AttachmentRepository attachmentRepository;
+
     //post 페이징(목록)
     public PageResponseDTO<PostDTO> getPostList(PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
 
@@ -64,6 +67,15 @@ public class PostService {
 
         Post post = new Post(dto.getTitle(), dto.getContent(), member, category);
 
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        //에디터에 첨부된 이미지 파일 정보에 저장된 post id 업데이트
+        String tempKey = dto.getTempKey();
+        boolean existsByTempKey = attachmentRepository.existsByTempKey(tempKey);
+        if(existsByTempKey) {
+            attachmentRepository.updatePostIdByTempKey(savedPost.getId(), tempKey);
+        }
+
+        return savedPost;
     }
 }

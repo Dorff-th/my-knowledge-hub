@@ -32,6 +32,7 @@ public class AttachmentService {
                 .publicUrl(dto.getPublicUrl())
                 .uploadType(dto.getUploadType())
                 .uploadedAt(LocalDateTime.now())
+                .tempKey(dto.getTempKey())
                 .build();
 
         return attachmentRepository.save(attachment);

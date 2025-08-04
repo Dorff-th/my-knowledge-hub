@@ -74,7 +74,10 @@ class PostServiceTest {
                 .content("포스트 등록 내용 테스트1")
                 .memberId(memberId)
                 .categoryId(categoryId)
+                .tempKey("1233")
                 .build();
+
+
 
         Post savePost = postService.createPost(dto);
 

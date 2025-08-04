@@ -27,12 +27,13 @@ public class UploadApiController {
     private final CustomFileUtil customFileUtil;
 
     @PostMapping("/api/images/upload")
-    public Map<String, Object> uploadEditorImage(@RequestParam("image") MultipartFile file) {
+    public Map<String, Object> uploadEditorImage(
+            @RequestParam("image") MultipartFile file, @RequestParam("tempKey") String tempKey) {
 
         System.out.println(file.getOriginalFilename());
 
         // 1. 파일 저장 (FileUtil에서)
-        FileSaveResultDTO fileDto = customFileUtil.saveEditorImageFile(file);  // DTO 반환
+        FileSaveResultDTO fileDto = customFileUtil.saveEditorImageFile(file, tempKey);  // DTO 반환
 
         // 2. 서비스에서 Attachment 엔티티 생성 하고 DB에 저장
         Attachment attachment = attachmentService.uploadEditorImageFile(fileDto);

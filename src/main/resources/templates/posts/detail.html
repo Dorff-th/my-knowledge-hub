@@ -62,6 +62,7 @@
 <div layout:fragment="page-script">
     <script type="module" th:inline="javascript">
         import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+        import { showInfoToast } from /*[[@{/js/toast.js}]]*/ '';
 
         const postId = document.getElementById("post-detail").dataset.postId;
 
@@ -91,6 +92,13 @@
             viewer: true,
             initialValue: content
         });
+
+        //글쓰기 저장이 완료되고 난뒤에  저장성공 toast메시지 띄우기, localStorage tempKey 삭제
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("fromSave") === "true") {
+            showInfoToast("Post 등록이 완료되었습니다.");
+            localStorage.removeItem("tempPostKey");
+        }
     </script>
 </div>
 </body>

@@ -51,22 +51,22 @@ public class CustomFileUtil {
         }
 
     /** ✅ 단일 파일 저장 (에디터용 이미지) */
-    public FileSaveResultDTO saveEditorImageFile(MultipartFile file) {
-        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString());
+    public FileSaveResultDTO saveEditorImageFile(MultipartFile file, String tempKey) {
+        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString(), tempKey);
     }
 
     /** ✅ 다중 파일 저장 (일반 첨부파일) */
-    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files) {
+    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, String tempKey) {
         List<FileSaveResultDTO> results = new ArrayList<>();
         for (MultipartFile file : files) {
-            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString()));
+            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString(), tempKey));
         }
         return results;
     }
 
 
 
-    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType) {
+    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, String tempKey) {
         try {
             String originalName = file.getOriginalFilename();
             String savedName = UUID.randomUUID() + "_" + originalName;
@@ -86,6 +86,7 @@ public class CustomFileUtil {
                     .fileType(file.getContentType())
                     .size(file.getSize())
                     .uploadType(uploadType)
+                    .tempKey(tempKey)
                     .build();
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 실패: " + file.getOriginalFilename(), e);

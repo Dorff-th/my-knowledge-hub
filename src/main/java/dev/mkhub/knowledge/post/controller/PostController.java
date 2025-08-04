@@ -97,16 +97,17 @@ public class PostController {
     }
 
     @PostMapping("/edit")
-    public String createEditor(@AuthenticationPrincipal MemberDetails memberDetails, PostRequestDTO dto) {
+    public String createEditor(@AuthenticationPrincipal MemberDetails memberDetails,
+                               PostRequestDTO dto) {
 
         Long memberId = memberDetails.getId();
         dto.setMemberId(memberId);
 
-        System.out.println(dto);
+        System.out.println("\n\n\n=in controller ==tempKey : " + dto.getTempKey());
 
         Post savedPost = postService.createPost(dto);
 
-        return "redirect:/posts/" + savedPost.getId();
+        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
 
     }
 

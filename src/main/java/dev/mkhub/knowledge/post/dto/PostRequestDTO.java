@@ -20,4 +20,6 @@ public class PostRequestDTO {
 
     private Long categoryId;
 
+    private String tempKey;
+
 }

@@ -15,7 +15,8 @@
 
             <!-- 글쓰기 폼 -->
             <form th:action="@{/posts/edit}" method="post">
-
+                <!-- tempKey hidden 필드 -->
+                <input type="hidden" name="tempKey" id="tempKey" />
                 <div class="mb-4">
                     <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-2">📂 카테고리 선택</label>
                     <select id="categoryId" name="categoryId"
@@ -51,6 +52,19 @@
 </main>
 <div layout:fragment="page-script">
     <script>
+        // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
+        let tempKey = localStorage.getItem("tempPostKey");
+        if (!tempKey) {
+            tempKey = crypto.randomUUID();
+            localStorage.setItem("tempPostKey", tempKey);
+
+        }
+
+        const formHiddenTempKey = document.getElementById('tempKey');
+        if(!formHiddenTempKey.value) {
+            formHiddenTempKey.value = tempKey;
+        }
+
         const editor = new toastui.Editor({
             el: document.querySelector('#editor'),
             height: '400px',
@@ -61,6 +75,7 @@
                 addImageBlobHook: async (blob, callback) => {
                     const formData = new FormData();
                     formData.append('image', blob); // blob은 File 객체
+                    formData.append("tempKey", tempKey);
 
                     const response = await fetch('/api/images/upload', {
                         method: 'POST',
@@ -68,7 +83,6 @@
                     });
 
                     const result = await response.json();
-                    console.log('result:', result);
 
                     callback(result.url); // 서버에서 받은 URL로 마크다운 이미지 삽입
                 }
@@ -79,6 +93,8 @@
             const content = editor.getMarkdown();
             document.getElementById('content').value = content;
         }
+
+
     </script>
 </div>
 </body>
