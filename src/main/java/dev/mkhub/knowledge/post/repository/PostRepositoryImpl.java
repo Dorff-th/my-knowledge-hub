@@ -85,7 +85,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         post.updatedAt,
                         category.name,
                         member.id,
-                        member.username
+                        member.username,
+                        category.id
                 ))
                 .from(post)
                 .leftJoin(post.category, category)
