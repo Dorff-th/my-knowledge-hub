@@ -84,7 +84,11 @@
 
                     const result = await response.json();
 
-                    callback(result.url); // 서버에서 받은 URL로 마크다운 이미지 삽입
+                     if (result.success === 1) {
+                        callback(result.url, 'image');
+                    } else {
+                        alert(result.message || "이미지 업로드 실패");
+                    }
                 }
             }
         });
