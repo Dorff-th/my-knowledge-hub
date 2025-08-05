@@ -14,7 +14,7 @@
             <h2 class="text-2xl font-bold mb-6">📝 새 글 작성</h2>
 
             <!-- 글쓰기 폼 -->
-            <form th:action="@{/posts/write}" method="post">
+            <form th:action="@{/posts/write}" method="post" id="postForm">
                 <!-- tempKey hidden 필드 -->
                 <input type="hidden" name="tempKey" id="tempKey" />
                 <div class="mb-4">
@@ -39,9 +39,15 @@
                 <div id="editor" class="mb-4"></div>
                 <textarea id="content" name="content" hidden></textarea>
 
-                <!-- 버튼 -->
+                <div class="mt-6">
+                    <a href="/posts"
+                       class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
+                        ← 목록으로
+                    </a>
+                </div>
+
                 <div class="flex justify-end mt-6">
-                    <button type="submit" onclick="submitPost()"
+                    <button type="button" onclick="submitPost()"
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
                         작성 완료
                     </button>
@@ -51,14 +57,18 @@
     </div>
 </main>
 <div layout:fragment="page-script">
-    <script>
+    <script th:inline="none">
         // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
+        /*
         let tempKey = localStorage.getItem("tempPostKey");
         if (!tempKey) {
             tempKey = crypto.randomUUID();
             localStorage.setItem("tempPostKey", tempKey);
-
         }
+        */
+        //새 글 작성할때마다 새롭게 tempKey 작성
+        tempKey = crypto.randomUUID();
+        localStorage.setItem("tempPostKey", tempKey);
 
         const formHiddenTempKey = document.getElementById('tempKey');
         if(!formHiddenTempKey.value) {
@@ -83,7 +93,6 @@
                     });
 
                     const result = await response.json();
-
                      if (result.success === 1) {
                         callback(result.url, 'image');
                     } else {
@@ -93,10 +102,42 @@
             }
         });
 
+        //저장 실행 함수
         function submitPost() {
+            //1.마크다운 내용 가져와서 content 에 넣기
             const content = editor.getMarkdown();
             document.getElementById('content').value = content;
-        }
+
+             // 2. 정규표현식으로 이미지 경로 추출 (예: ![](/uploads/images/xxx.png))
+            const imageUrls = Array.from(content.matchAll(/!\[[^\]]*]\((\/uploads\/images\/[^)]+)\)/g))
+                                .map(match => match[1]); // 괄호 안의 경로만 추출
+
+             // 3. 이미지 경로에서 파일명(storedName)만 추출 ( 즉, fileName을 추출)
+            const storedNames = imageUrls.map(url => {
+                const parts = url.split('/');
+                return parts[parts.length - 1]; // 파일명만 추출
+            });
+
+             // 4. 서버에 이미지 정리 요청 보내기
+             fetch("/api/images/temp/cleanup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tempKey: tempKey,
+                    storedNames: storedNames
+                })
+            });
+
+            //디버깅
+            console.log("tempKey : " + tempKey);
+            console.log(storedNames);
+
+            //5. 모든 작업 완료 후 폼 제출
+            document.getElementById("postForm").submit();
+
+        } // submitPost() 함수 종료
 
 
     </script>

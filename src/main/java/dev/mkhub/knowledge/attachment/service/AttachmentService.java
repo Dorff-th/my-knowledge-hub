@@ -8,9 +8,11 @@ import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -57,5 +59,29 @@ public class AttachmentService {
 
 
         return attachmentRepository.saveAll(attachments);
+    }
+
+    //작성중인 post에 첨부한(삽입한) 이미지를 다시 삭제할때 삭제 대상 file_name으로 찾아서 삭제
+    @Transactional
+    public void cleanupUnusedTempImages(String tempKey, List<String> storedNames) {
+        //attachmentRepository.deleteByFileName(fileName);
+
+        //삭제 대상 storedNames(즉 fileName들)을 조회하여
+        List<Attachment> unusedTempImages = attachmentRepository.findUnusedImages(tempKey, storedNames);
+
+        //삭제대상 storeName 콘솔로 확인
+        System.out.println("\n\n\n====삭제대상 storeName 콘솔로 확인");
+        System.out.println("tempKey : " + tempKey);
+        unusedTempImages.forEach(img->{System.out.println(img.getFileName());});
+
+        //삭제 대상 이미지 파일(서버에 저장된 실제파일명)을 리스트화
+        List<String> unusedFileNames = unusedTempImages.stream()
+                .map(img->img.getFileName())
+                .collect(Collectors.toList());
+
+        if(unusedFileNames.size() > 0) {
+            attachmentRepository.deleteByTempKeyAndStoredNames(tempKey, unusedFileNames);
+        }
+
     }
 }

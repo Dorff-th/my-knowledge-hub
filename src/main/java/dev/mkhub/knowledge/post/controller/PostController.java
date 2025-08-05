@@ -106,7 +106,6 @@ public class PostController {
         Post savedPost = postService.createPost(dto);
 
         return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
-
     }
 
     // 기존 post 수정화면
@@ -123,6 +122,16 @@ public class PostController {
         return "posts/editor";
     }
 
+    //Post 수정 처리
+    public String editPost(@AuthenticationPrincipal MemberDetails memberDetails, @ModelAttribute PostRequestDTO dto) {
+
+        Long memberId = memberDetails.getId();
+        dto.setMemberId(memberId);
+
+        Post savedPost = postService.editPost(dto);
+
+        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
+    }
 
 
     //Post 삭제 - 연관관계에 있는 Attachement, Comment 도 함께 삭제

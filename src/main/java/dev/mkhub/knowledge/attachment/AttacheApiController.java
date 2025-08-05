@@ -2,19 +2,19 @@ package dev.mkhub.knowledge.attachment;
 
 import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
+import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
 import dev.mkhub.knowledge.attachment.service.AttachmentService;
 import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.util.StringUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class UploadApiController {
+public class AttacheApiController {
 
     private final AttachmentService attachmentService;
     private final CustomFileUtil customFileUtil;
@@ -87,5 +87,17 @@ public class UploadApiController {
         }
 
     } // method end
+
+    @PostMapping("/api/images/temp/cleanup")
+    public ResponseEntity<?> cleanupTempImages(@RequestBody TempImageCleanupRequestDTO request) {
+
+        String tempKey = request.getTempKey();
+        List<String> storedNames = request.getStoredNames();
+
+        // 서비스 호출
+        attachmentService.cleanupUnusedTempImages(tempKey, storedNames);
+
+        return ResponseEntity.ok().build();
+    }
 
 }

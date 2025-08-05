@@ -80,6 +80,16 @@ public class PostService {
         return savedPost;
     }
 
+    public Post editPost(PostRequestDTO dto) {
+
+        Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(()->new IllegalArgumentException("사용자가 없습니다."));
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->new IllegalArgumentException("카테고리가 없습니다."));
+
+        Post post = new Post(dto.getTitle(), dto.getContent(), member, category);
+        Post savedPost = postRepository.save(post);
+        return savedPost;
+    }
+
     //Post 삭제
     @Transactional
     public void deletePost(Long id) {

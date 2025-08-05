@@ -28,4 +28,13 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     @Query("DELETE FROM Attachment a WHERE a.post.id = :postId")
     void deleteByPostId(@Param("postId") Long postId);*/
 
+    //같은 temp_key에서 에디터에 남아있는 file_name을 제외한 attachement를 조회
+    @Query("SELECT a FROM Attachment a WHERE a.tempKey = :tempKey AND a.fileName NOT IN :fileNames")
+    List<Attachment> findUnusedImages(@Param("tempKey") String tempKey, @Param("fileNames") List<String> fileNames);
+
+    @Modifying
+    @Query("DELETE FROM Attachment a WHERE a.tempKey = :tempKey AND a.fileName IN :fileNames")
+    void deleteByTempKeyAndStoredNames(@Param("tempKey") String tempKey,
+                                       @Param("fileNames") List<String> fileNames);
+
 }
