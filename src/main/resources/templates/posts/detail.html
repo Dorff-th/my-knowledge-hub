@@ -29,14 +29,14 @@
             </div>
 
             <!-- 삭제 버튼 -->
-            <div class="mt-6">
+            <div class="mt-6" th:if="${post.memberId} == ${loginUserId}">
                 <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" class="inline-form">
                     <button type="submit" title="삭제" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150"
                             onclick="return confirm('정말 삭제하시겠습니까?')">❌삭제하기</button>
                 </form>
             </div>
 
-            <div class="mt-6">
+            <div class="mt-6" th:if="${post.memberId} == ${loginUserId}">
                 <a th:href="@{/posts/{id}/edit(id=${post.id})}"
                    class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
                     수정하기
@@ -110,8 +110,11 @@
 
         //글쓰기 저장이 완료되고 난뒤에  저장성공 toast메시지 띄우기, localStorage tempKey 삭제
         const params = new URLSearchParams(window.location.search);
-        if (params.get("fromSave") === "true") {
+        if (params.get("fromSave") === "true" && params.get("saveType") === "created") {
             showInfoToast("Post 등록이 완료되었습니다.");
+            localStorage.removeItem("tempPostKey");
+        } else if (params.get("fromSave") === "true" && params.get("saveType") === "updated") {
+            showInfoToast("Post 수정이 완료되었습니다.");
             localStorage.removeItem("tempPostKey");
         }
     </script>

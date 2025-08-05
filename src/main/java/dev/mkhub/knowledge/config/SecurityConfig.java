@@ -20,7 +20,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test/**", "/error", "/register", "/login", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/posts/write", "/posts/edit/**", "/api/comments/**").hasAnyRole("USER", "ADMIN") // ✅ 로그인 필요
+                        .requestMatchers("/posts/write", "/posts/*/edit", "/posts/*/delete", "/api/comments/**").hasAnyRole("USER", "ADMIN") // ✅ 로그인 필요
                         .requestMatchers("/", "/posts", "/posts/**", "/api/**", "/search/**").permitAll() // ✅ 공개
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
@@ -34,7 +34,8 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/posts?msg=logoutSuccess")
                 )
                 .exceptionHandling(ex -> ex
-                        .accessDeniedPage("/access-denied") // 🔒 여기 추가
+                        .accessDeniedPage("/error/403")
+
                 )
                 .csrf(csrf -> csrf.disable());
 

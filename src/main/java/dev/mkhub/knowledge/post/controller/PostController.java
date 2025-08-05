@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,12 +65,15 @@ public class PostController {
     //게시글(post) 상세 내용 조회
     @GetMapping("/{id}")
     public String post(@PathVariable("id") Long id,
-                       Model model) {
+                       Model model,
+                       @AuthenticationPrincipal MemberDetails loginUser) {
 
         PostDetailDTO postDetailDTO = postService.getPost(id)
                 .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         model.addAttribute("post", postDetailDTO);
+
+        model.addAttribute("loginUserId", loginUser.getMember().getId());
 
         return "posts/detail";
     }
@@ -97,22 +101,34 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public String createNewPost(@AuthenticationPrincipal MemberDetails memberDetails,
+    public String createNewPost(@AuthenticationPrincipal MemberDetails loginUser,
                                PostRequestDTO dto) {
 
-        Long memberId = memberDetails.getId();
+        Long memberId = loginUser.getId();
         dto.setMemberId(memberId);
 
         Post savedPost = postService.createPost(dto);
 
-        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
+        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true&saveType=created";
     }
 
     // 기존 post 수정화면
     @GetMapping("/{id}/edit")
-    public String editor(@PathVariable("id") Long id, Model model) {
+    public String editor(@PathVariable("id") Long id, Model model,
+                         @AuthenticationPrincipal MemberDetails loginUser) {
         //기존 Post 내용 조회
         PostDetailDTO post = postService.getPost(id).orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다."));
+
+        System.out.println("\n\n\n===== post MemberId " + post.getMemberId());
+        System.out.println("===== loginUser id " + loginUser.getId());
+
+        if(!post.getMemberId().equals(loginUser.getId())) {
+            System.out.println("권한없음");
+            throw new AccessDeniedException("권한이 없습니다.");
+        } else {
+            System.out.println("권한있음!");
+        }
+
         model.addAttribute("post", post);
 
         //category 목록 조회
@@ -123,14 +139,14 @@ public class PostController {
     }
 
     //Post 수정 처리
-    public String editPost(@AuthenticationPrincipal MemberDetails memberDetails, @ModelAttribute PostRequestDTO dto) {
+    public String editPost(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostRequestDTO dto) {
 
-        Long memberId = memberDetails.getId();
+        Long memberId = loginUser.getId();
         dto.setMemberId(memberId);
 
         Post savedPost = postService.editPost(dto);
 
-        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
+        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true&saveType=updated";
     }
 
 
