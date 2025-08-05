@@ -27,6 +27,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<PostDTO> findAllByMemberId(Pageable pageable);
     
     //Post 상세조회 -  JpaRepository 자체 지원 findById를 서비스 로직에서 구현하면 되니까 별도 메서드 선언 필요 없음
-    
+
+    //Post 삭제  - service에서  deleteById 으로 직접처리
 
 }

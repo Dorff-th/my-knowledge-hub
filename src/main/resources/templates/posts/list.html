@@ -47,9 +47,9 @@
         <!-- 글쓰기 버튼 -->
 
             <div class="flex justify-end mt-7" sec:authorize="isAuthenticated()">
-                <a th:href="@{/posts/edit}"
+                <a th:href="@{/posts/write}"
                        class="bg-blue-500 text-white px-4 py-2 rounded">
-                    ✏ Editor
+                    ✏ Writer
                 </a>
             </div>
 
@@ -64,13 +64,24 @@
 </main>
 
 <div layout:fragment="page-script">
-        <script>
-            document.querySelectorAll(".post-card").forEach(card => {
-                card.addEventListener("click", function () {
-                    const id = this.dataset.id;
-                    window.location.href = `/posts/${id}`;
+        <script type="module" th:inline="javascript">
+            import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+            import { showInfoToast } from /*[[@{/js/toast.js}]]*/ '';
+
+                //제목 클릭시 상세보기 페이지로 이동
+                document.querySelectorAll(".post-card").forEach(card => {
+                    card.addEventListener("click", function () {
+                        const id = this.dataset.id;
+                        window.location.href = `/posts/${id}`;
+                    });
                 });
-            });
+
+                //post 삭제시 목록으로 redirect할때 삭제 성공 메세지 toast 팝업
+                const params = new URLSearchParams(window.location.search);
+                if (params.get("fromDelete") === "true") {
+                    showInfoToast("Post가 삭제되었습니다.");
+
+                }
         </script>
     </div>
 </body>

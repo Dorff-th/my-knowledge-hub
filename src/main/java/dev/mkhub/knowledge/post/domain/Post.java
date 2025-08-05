@@ -45,10 +45,10 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
 
     public Post(String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt, Member member, Category category) {

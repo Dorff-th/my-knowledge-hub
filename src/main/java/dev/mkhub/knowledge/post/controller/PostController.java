@@ -89,26 +89,48 @@ public class PostController {
         return "redirect:/posts/editor-demo"; // 다시 폼으로
     }
 
-    @GetMapping("/edit")
-    public String showEditor(Model model) {
+    @GetMapping("/write")
+    public String showWriter(Model model) {
         List<Category> categories = categoryService.findAllCategory();
         model.addAttribute("categories", categories);
-        return "posts/editor";
+        return "posts/writer";
     }
 
-    @PostMapping("/edit")
-    public String createEditor(@AuthenticationPrincipal MemberDetails memberDetails,
+    @PostMapping("/write")
+    public String createNewPost(@AuthenticationPrincipal MemberDetails memberDetails,
                                PostRequestDTO dto) {
 
         Long memberId = memberDetails.getId();
         dto.setMemberId(memberId);
 
-        System.out.println("\n\n\n=in controller ==tempKey : " + dto.getTempKey());
-
         Post savedPost = postService.createPost(dto);
 
         return "redirect:/posts/" + savedPost.getId() + "?fromSave=true";
 
+    }
+
+    // 기존 post 수정화면
+    @GetMapping("/{id}/edit")
+    public String editor(@PathVariable("id") Long id, Model model) {
+        //기존 Post 내용 조회
+        PostDetailDTO post = postService.getPost(id).orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다."));
+        model.addAttribute("post", post);
+
+        //category 목록 조회
+        List<Category> categories = categoryService.findAllCategory();
+        model.addAttribute("categories", categories);
+
+        return "posts/editor";
+    }
+
+
+
+    //Post 삭제 - 연관관계에 있는 Attachement, Comment 도 함께 삭제
+    @PostMapping("/{id}/delete")
+    public String deletePost(@PathVariable("id") Long id) {
+        postService.deletePost(id);
+
+        return  "redirect:/posts?fromDelete=true";
     }
 
 }
