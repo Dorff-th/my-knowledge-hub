@@ -12,6 +12,7 @@ import dev.mkhub.knowledge.post.dto.PostUpdateDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.post.service.PostService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,14 +68,15 @@ public class PostController {
     @GetMapping("/{id}")
     public String post(@PathVariable("id") Long id,
                        Model model,
-                       @AuthenticationPrincipal MemberDetails loginUser) {
+                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser' ? null : #this") MemberDetails loginUser) {
 
         PostDetailDTO postDetailDTO = postService.getPost(id)
                 .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         model.addAttribute("post", postDetailDTO);
 
-        model.addAttribute("loginUserId", loginUser.getMember().getId());
+        model.addAttribute("loginUserId",
+                loginUser != null ? loginUser.getMember().getId() : null);
 
         return "posts/detail";
     }
@@ -120,8 +122,8 @@ public class PostController {
         //기존 Post 내용 조회
         PostDetailDTO post = postService.getPost(id).orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다."));
 
-        System.out.println("\n\n\n===== post MemberId " + post.getMemberId());
-        System.out.println("===== loginUser id " + loginUser.getId());
+        //System.out.println("\n\n\n===== post MemberId " + post.getMemberId());
+        //System.out.println("===== loginUser id " + loginUser.getId());
 
         if(!post.getMemberId().equals(loginUser.getId())) {
             System.out.println("권한없음");
@@ -153,9 +155,13 @@ public class PostController {
         Long memberId = loginUser.getId();
         dto.setMemberId(memberId);
 
-        Post savedPost = postService.editPost(dto);
+        int updatedCount = postService.editPost(dto);
 
-        return "redirect:/posts/" + savedPost.getId() + "?fromSave=true&saveType=updated";
+        if(updatedCount == 0 ) {
+            new EntityNotFoundException("업데이트 실패!");
+        }
+
+        return "redirect:/posts/" + dto.getId() + "?fromSave=true&saveType=updated";
     }
 
 

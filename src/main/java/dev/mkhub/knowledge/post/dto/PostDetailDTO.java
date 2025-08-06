@@ -23,5 +23,6 @@ public class PostDetailDTO {
     private Long memberId;
     private String username;
     private Long categoryId;
+    private String nickname;
     //private Long commentCount; <-- Post 상세 내용은 댓글 개수는 CommentDTO에서 포함예정
 }

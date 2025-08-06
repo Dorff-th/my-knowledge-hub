@@ -60,7 +60,7 @@ public class Post {
         this.category = category;
     }
 
-    //post 간단 save
+    //post 간단 save (PostService의 createPost() 메서드에 사용)
     public Post(String title, String content, Member member, Category category) {
         this.title = title;
         this.content = content;
@@ -69,5 +69,7 @@ public class Post {
         this.viewCount = 0;
         this.createdAt = LocalDateTime.now();
     }
+
+
 
 }

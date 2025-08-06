@@ -3,6 +3,8 @@ package dev.mkhub.knowledge.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  *   기존 Post 수정 요청을 하는 DTO
  */
@@ -23,4 +25,10 @@ public class PostUpdateDTO {
     private Long memberId;
 
     private Long categoryId;
+
+    private LocalDateTime updatedAt;
+
+    public LocalDateTime getUpdatedAt() {
+        return LocalDateTime.now();
+    }
 }

@@ -2,10 +2,14 @@ package dev.mkhub.knowledge.post.repository;
 
 import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.post.dto.PostDTO;
+import dev.mkhub.knowledge.post.dto.PostUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -25,9 +29,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         LEFT OUTER JOIN  p.member m
         """)
     Page<PostDTO> findAllByMemberId(Pageable pageable);
-    
-    //Post 상세조회 -  JpaRepository 자체 지원 findById를 서비스 로직에서 구현하면 되니까 별도 메서드 선언 필요 없음
 
-    //Post 삭제  - service에서  deleteById 으로 직접처리
+    @Modifying
+    @Transactional
+    @Query("UPDATE Post a SET a.title = :#{#dto.title}, a.content =:#{#dto.content}, a.category.id =:#{#dto.categoryId}, a.updatedAt =:#{#dto.updatedAt} " +
+            "WHERE a.id = :#{#dto.id}")
+    int updatePostById(@Param("dto")PostUpdateDTO dto);
+
 
 }

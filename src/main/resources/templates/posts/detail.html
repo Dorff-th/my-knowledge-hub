@@ -14,8 +14,11 @@
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800"
                 th:text="${post.title}">Understanding Dependency Injection</h1>
             <p class="text-sm text-gray-500 mt-2"
-               th:text="${post.username} + ' · ' + ${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">
+               th:text="${post.nickname} + ' · ' + ${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">
                 By John Doe · Apr 24, 2024
+            </p>
+            <p class="text-sm text-gray-500 mt-2" th:if="${post.updatedAt != null}">
+                last update :  <span th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"> </span>
             </p>
         </div>
 
@@ -29,14 +32,14 @@
             </div>
 
             <!-- 삭제 버튼 -->
-            <div class="mt-6" th:if="${post.memberId} == ${loginUserId}">
+            <div class="mt-6" th:if="${loginUserId != null and post.memberId == loginUserId}">
                 <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" class="inline-form">
                     <button type="submit" title="삭제" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150"
                             onclick="return confirm('정말 삭제하시겠습니까?')">❌삭제하기</button>
                 </form>
             </div>
 
-            <div class="mt-6" th:if="${post.memberId} == ${loginUserId}">
+            <div class="mt-6" th:if="${loginUserId != null and post.memberId == loginUserId}">
                 <a th:href="@{/posts/{id}/edit(id=${post.id})}"
                    class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
                     수정하기
