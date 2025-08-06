@@ -11,19 +11,20 @@
         <div class="bg-white p-6 rounded-lg shadow-md">
 
             <!-- 제목 -->
-            <h2 class="text-2xl font-bold mb-6">📝 새 글 작성</h2>
+            <h2 class="text-2xl font-bold mb-6">📝 Post 수정</h2>
 
             <!-- 글쓰기 폼 -->
-            <form th:action="@{/posts/write}" method="post" id="postForm">
-                <!-- tempKey hidden 필드 -->
-                <input type="hidden" name="tempKey" id="tempKey" />
+            <form th:action="@{/posts/{id}/edit(id=${post.id})}" method="post">
+
+                <input type="hidden" name="id" id="postId" th:value="${post.id}" />
                 <div class="mb-4">
                     <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-2">📂 카테고리 선택</label>
                     <select id="categoryId" name="categoryId"
                             class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option th:each="category : ${categories}"
                                 th:value="${category.id}"
-                                th:text="${category.name}">
+                                th:text="${category.name}"
+                                th:selected="${category.id == post.categoryId}">
                         </option>
                     </select>
                 </div>
@@ -32,6 +33,7 @@
                 <label class="block mb-2 text-sm font-medium text-gray-700">제목</label>
                 <input type="text" name="title" placeholder="제목을 입력하세요"
                        class="w-full px-4 py-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring focus:ring-blue-200"
+                       th:value="${post.title}"
                        required>
 
                 <!-- Toast UI Editor 영역 -->
@@ -40,16 +42,17 @@
                 <textarea id="content" name="content" hidden></textarea>
 
                 <div class="mt-6">
-                    <a href="/posts"
+                    <a th:href="@{/posts/{id}(id=${post.id})}"
                        class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
-                        ← 목록으로
+                        ← 수정취소
                     </a>
                 </div>
 
+                <!-- 버튼 -->
                 <div class="flex justify-end mt-6">
                     <button type="button" onclick="submitPost()"
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-                        작성 완료
+                        수정 완료
                     </button>
                 </div>
             </form>
@@ -57,32 +60,24 @@
     </div>
 </main>
 <div layout:fragment="page-script">
-    <script th:inline="none">
-        // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
+    <script th:inline="javascript">
 
-        let tempKey = localStorage.getItem("tempPostKey");
-        if (!tempKey) {
-            tempKey = crypto.randomUUID();
-            localStorage.setItem("tempPostKey", tempKey);
-        }
+        const existingContent = /*[[${post.content}]]*/ '';
 
-        const formHiddenTempKey = document.getElementById('tempKey');
-        if(!formHiddenTempKey.value) {
-            formHiddenTempKey.value = tempKey;
-        }
+        //postId를 기준으로 사용하지 않는 Attachment를 삭제하거나 새로운 이미지를 추가할때 필요
+        const postId = document.getElementById('postId');
 
         const editor = new toastui.Editor({
             el: document.querySelector('#editor'),
             height: '400px',
             initialEditType: 'markdown',
             previewStyle: 'vertical',
-            placeholder: '내용을 작성하세요...',
+            initialValue: existingContent,  // ← 이 부분!
             hooks: {
                 addImageBlobHook: async (blob, callback) => {
                     const formData = new FormData();
-                    formData.append('image', blob);             //image
-                    formData.append("mode", "CREATE");            //새로운 post 작성시 첨부되는 임시 이미지라는 뜻 (TEMP -> CREATE 변경)
-                    formData.append("identifier", tempKey);     //새로운 post 작성시 identifier 값은 tempKey(UUID로 생성한 localStorage에 저장되는 값 )
+                    formData.append('image', blob); // blob은 File 객체
+                    formData.append("postId", postId);
 
                     const response = await fetch('/api/images/upload', {
                         method: 'POST',
@@ -90,6 +85,7 @@
                     });
 
                     const result = await response.json();
+
                      if (result.success === 1) {
                         callback(result.url, 'image');
                     } else {
@@ -123,7 +119,6 @@
                 },
                 body: JSON.stringify({
                     tempKey: tempKey,
-                    mode : "CREATE",
                     storedNames: storedNames
                 })
             });

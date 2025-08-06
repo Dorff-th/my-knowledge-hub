@@ -1,6 +1,7 @@
 package dev.mkhub.knowledge.attachment.util;
 
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
+import dev.mkhub.knowledge.attachment.enums.UploadMode;
 import dev.mkhub.knowledge.attachment.enums.UploadType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -51,22 +52,22 @@ public class CustomFileUtil {
         }
 
     /** ✅ 단일 파일 저장 (에디터용 이미지) */
-    public FileSaveResultDTO saveEditorImageFile(MultipartFile file, String tempKey) {
-        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString(), tempKey);
+    public FileSaveResultDTO saveEditorImageFile(MultipartFile file, UploadMode mode, String identifier) {
+        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString(), mode, identifier);
     }
 
     /** ✅ 다중 파일 저장 (일반 첨부파일) */
-    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, String tempKey) {
+    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, UploadMode mode, String identifier) {
         List<FileSaveResultDTO> results = new ArrayList<>();
         for (MultipartFile file : files) {
-            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString(), tempKey));
+            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString(), mode, identifier));
         }
         return results;
     }
 
 
 
-    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, String tempKey) {
+    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, UploadMode mode, String identifier) {
         try {
             String originalName = file.getOriginalFilename();
             String savedName = UUID.randomUUID() + "_" + originalName;
@@ -75,19 +76,32 @@ public class CustomFileUtil {
             file.transferTo(target);
 
             // public URL 생성 (※ /uploads/images/ 는 설정된 정적 매핑 경로에 따라 조정)
-            //String publicUrl = "/uploads/images/" + savedName;
+            //String publicUrl = "/uploads/images/" + savedName;   (일반 첨부파일 구현시 수정 필요)
             String imagePublicUrl = "/uploads/images/" + savedName;
 
-            return FileSaveResultDTO.builder()
+
+            FileSaveResultDTO.FileSaveResultDTOBuilder builder = FileSaveResultDTO.builder()
                     .fileName(savedName)
                     .originFileName(originalName)
                     .fileUrl(uploadDir + savedName)     // 실제 파일이 서버의 물리경로
                     .publicUrl(imagePublicUrl)             // 외부 경로
                     .fileType(file.getContentType())
                     .size(file.getSize())
-                    .uploadType(uploadType)
-                    .tempKey(tempKey)
-                    .build();
+                    .uploadType(uploadType);
+
+            if (mode == UploadMode.CREATE) {
+                builder.tempKey(identifier);
+            } else if (mode == UploadMode.UPDATE) {
+                try {
+                    builder.postId(Long.parseLong(identifier));  // 🔥 여기를 Long으로 변환
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("postId(identifier) 값이 숫자가 아닙니다: " + identifier);
+                }
+            }
+
+            FileSaveResultDTO resultDTO = builder.build();
+
+            return resultDTO;
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 실패: " + file.getOriginalFilename(), e);
         }

@@ -2,9 +2,12 @@ package dev.mkhub.knowledge.attachment.service;
 
 import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
+import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
+import dev.mkhub.knowledge.attachment.enums.UploadMode;
 import dev.mkhub.knowledge.attachment.repository.AttachmentRepository;
 import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
+import dev.mkhub.knowledge.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,11 +24,11 @@ public class AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
     private final CustomFileUtil fileUtil;
+    private final PostRepository postRepository;
 
     //에디터 이미지 첨부파일 저장
     public Attachment uploadEditorImageFile(FileSaveResultDTO dto) {
-        Attachment attachment = Attachment.builder()
-                .post(null)
+        Attachment.AttachmentBuilder builder = Attachment.builder()
                 .fileName(dto.getFileName())
                 .originFileName(dto.getOriginFileName())
                 .fileType(dto.getFileType())
@@ -33,11 +36,21 @@ public class AttachmentService {
                 .fileUrl(dto.getFileUrl())
                 .publicUrl(dto.getPublicUrl())
                 .uploadType(dto.getUploadType())
-                .uploadedAt(LocalDateTime.now())
-                .tempKey(dto.getTempKey())
-                .build();
+                .uploadedAt(LocalDateTime.now());
 
-        return attachmentRepository.save(attachment);
+        if (dto.getTempKey() != null) {
+            builder.tempKey(dto.getTempKey());  // TEMP 모드
+        }
+
+        if (dto.getPostId() != null) {
+            Post post = postRepository.findById(dto.getPostId())
+                    .orElseThrow(() -> new IllegalArgumentException("Post not found: " + dto.getPostId()));
+            builder.post(post);  // POST 모드
+        } else {
+            builder.post(null);  // 작성 중이거나 tempKey 기반일 때
+        }
+
+        return attachmentRepository.save(builder.build());
 
     }
 
@@ -63,25 +76,52 @@ public class AttachmentService {
 
     //작성중인 post에 첨부한(삽입한) 이미지를 다시 삭제할때 삭제 대상 file_name으로 찾아서 삭제
     @Transactional
-    public void cleanupUnusedTempImages(String tempKey, List<String> storedNames) {
-        //attachmentRepository.deleteByFileName(fileName);
+    public void cleanupUnusedTempImages(TempImageCleanupRequestDTO request) {
 
-        //삭제 대상 storedNames(즉 fileName들)을 조회하여
-        List<Attachment> unusedTempImages = attachmentRepository.findUnusedImages(tempKey, storedNames);
+        if(request.getMode() == UploadMode.CREATE) {
 
-        //삭제대상 storeName 콘솔로 확인
-        System.out.println("\n\n\n====삭제대상 storeName 콘솔로 확인");
-        System.out.println("tempKey : " + tempKey);
-        unusedTempImages.forEach(img->{System.out.println(img.getFileName());});
+            String tempKey = request.getTempKey();
+            List<String> storedNames = request.getStoredNames();
 
-        //삭제 대상 이미지 파일(서버에 저장된 실제파일명)을 리스트화
-        List<String> unusedFileNames = unusedTempImages.stream()
-                .map(img->img.getFileName())
-                .collect(Collectors.toList());
+            //삭제 대상 storedNames(즉 fileName들)을 조회하여
+            List<Attachment> unusedTempImages = attachmentRepository.findUnusedImagesByTempKey(tempKey, storedNames);
 
-        if(unusedFileNames.size() > 0) {
-            attachmentRepository.deleteByTempKeyAndStoredNames(tempKey, unusedFileNames);
+            //삭제대상 storeName 콘솔로 확인
+            log.debug("\n\n\n====삭제대상 storeName 콘솔로 확인");
+            log.debug("tempKey : " + tempKey);
+            unusedTempImages.forEach(img->{log.debug(img.getFileName());});
+
+            //삭제 대상 이미지 파일(서버에 저장된 실제파일명)을 리스트화
+            List<String> unusedFileNames = unusedTempImages.stream()
+                    .map(img->img.getFileName())
+                    .collect(Collectors.toList());
+
+            if (!unusedFileNames.isEmpty()) {
+                attachmentRepository.deleteByTempKeyAndStoredNamesByTempKey(tempKey, unusedFileNames);
+            }
+
+        } else if(request.getMode() == UploadMode.UPDATE) {
+            // TODO: 기존 postId 기반 미사용 이미지 정리 로직
+            Long postId = request.getPostId();
+            List<String> storedNames = request.getStoredNames();
+            List<Attachment> unusedTempImages = attachmentRepository.findUnusedImagesByPostId(postId, storedNames);
+
+            //삭제 대상 storedNames(즉 fileName들)을 조회하여
+            //삭제대상 storeName 콘솔로 확인
+            log.info("\n\n\n====삭제대상 storeName 콘솔로 확인");
+            log.info("postId : " + postId);
+            unusedTempImages.forEach(img->{log.debug(img.getFileName());});
+
+            //삭제 대상 이미지 파일(서버에 저장된 실제파일명)을 리스트화
+            List<String> unusedFileNames = unusedTempImages.stream()
+                    .map(img->img.getFileName())
+                    .collect(Collectors.toList());
+
+            if (!unusedFileNames.isEmpty()) {
+                attachmentRepository.deleteByTempKeyAndStoredNamesByPostId(postId, unusedFileNames);
+            }
+
         }
 
-    }
+    } // method end
 }

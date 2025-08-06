@@ -59,12 +59,16 @@
 <div layout:fragment="page-script">
     <script th:inline="none">
         // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
-
+        /*
         let tempKey = localStorage.getItem("tempPostKey");
         if (!tempKey) {
             tempKey = crypto.randomUUID();
             localStorage.setItem("tempPostKey", tempKey);
         }
+        */
+        //새 글 작성할때마다 새롭게 tempKey 작성
+        tempKey = crypto.randomUUID();
+        localStorage.setItem("tempPostKey", tempKey);
 
         const formHiddenTempKey = document.getElementById('tempKey');
         if(!formHiddenTempKey.value) {
@@ -80,9 +84,8 @@
             hooks: {
                 addImageBlobHook: async (blob, callback) => {
                     const formData = new FormData();
-                    formData.append('image', blob);             //image
-                    formData.append("mode", "CREATE");            //새로운 post 작성시 첨부되는 임시 이미지라는 뜻 (TEMP -> CREATE 변경)
-                    formData.append("identifier", tempKey);     //새로운 post 작성시 identifier 값은 tempKey(UUID로 생성한 localStorage에 저장되는 값 )
+                    formData.append('image', blob); // blob은 File 객체
+                    formData.append("tempKey", tempKey);
 
                     const response = await fetch('/api/images/upload', {
                         method: 'POST',
@@ -123,7 +126,6 @@
                 },
                 body: JSON.stringify({
                     tempKey: tempKey,
-                    mode : "CREATE",
                     storedNames: storedNames
                 })
             });

@@ -1,8 +1,9 @@
-package dev.mkhub.knowledge.attachment;
+package dev.mkhub.knowledge.attachment.controller;
 
 import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
 import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
+import dev.mkhub.knowledge.attachment.enums.UploadMode;
 import dev.mkhub.knowledge.attachment.service.AttachmentService;
 import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,9 @@ public class AttacheApiController {
 
     @PostMapping("/api/images/upload")
     public ResponseEntity<?>uploadEditorImage(
-            @RequestParam("image") MultipartFile file, @RequestParam("tempKey") String tempKey) {
+            @RequestParam("image") MultipartFile file,
+            @RequestParam("mode") String mode,
+            @RequestParam("identifier") String identifier) {
 
         try {
 
@@ -68,7 +71,8 @@ public class AttacheApiController {
             }
 
             // 1. 파일 저장 (FileUtil에서)
-            FileSaveResultDTO fileDto = customFileUtil.saveEditorImageFile(file, tempKey);  // DTO 반환
+            UploadMode uploadMode = UploadMode.valueOf(mode);
+            FileSaveResultDTO fileDto = customFileUtil.saveEditorImageFile(file, uploadMode, identifier);  // DTO 반환
 
             // 2. 서비스에서 Attachment 엔티티 생성 하고 DB에 저장
             Attachment attachment = attachmentService.uploadEditorImageFile(fileDto);
@@ -80,6 +84,7 @@ public class AttacheApiController {
             ));
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "success", 0,
                     "message", "이미지 업로드 중 오류가 발생했습니다."
@@ -91,11 +96,11 @@ public class AttacheApiController {
     @PostMapping("/api/images/temp/cleanup")
     public ResponseEntity<?> cleanupTempImages(@RequestBody TempImageCleanupRequestDTO request) {
 
-        String tempKey = request.getTempKey();
-        List<String> storedNames = request.getStoredNames();
+        //String tempKey = request.getTempKey();
+        //List<String> storedNames = request.getStoredNames();
 
         // 서비스 호출
-        attachmentService.cleanupUnusedTempImages(tempKey, storedNames);
+        attachmentService.cleanupUnusedTempImages(request);
 
         return ResponseEntity.ok().build();
     }

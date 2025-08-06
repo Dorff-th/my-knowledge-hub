@@ -20,5 +20,10 @@ public class FileSaveResultDTO {
     private long size;              // 파일 사이즈(byte)
     private String uploadType;      // 에디터 첨부 이미지파일 (EDITOR_IMAGE), 일반 첨부파일(ATTACHMENT)
     private String publicUrl;    // 클라이언트가 접근할 수 있는 경로 (예: /uploads/images/xxx.png)
-    private String tempKey;     // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (에디터에 이미지 파일을 첨부할때)
+
+    // ✅ 게시글 작성 중: tempKey 사용
+    private String tempKey;
+
+    // ✅ 게시글 수정 중: postId 사용
+    private Long postId;
 }
