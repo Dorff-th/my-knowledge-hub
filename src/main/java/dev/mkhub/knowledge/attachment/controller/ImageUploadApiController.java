@@ -4,8 +4,8 @@ import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
 import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
 import dev.mkhub.knowledge.attachment.enums.UploadMode;
-import dev.mkhub.knowledge.attachment.service.AttachmentService;
-import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
+import dev.mkhub.knowledge.attachment.service.ImageUploadService;
+import dev.mkhub.knowledge.attachment.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,8 +14,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +24,10 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class AttacheApiController {
+public class ImageUploadApiController {
 
-    private final AttachmentService attachmentService;
-    private final CustomFileUtil customFileUtil;
+    private final ImageUploadService imageUploadService;
+    private final ImageUploadUtil imageUploadUtil;
 
     //에디터에서 이미지 파일 등록시 특정 확장자만 허용
     private static final List<String> ALLOWED_EXTENSIONS = List.of("png", "jpg", "jpeg", "gif");
@@ -72,10 +70,10 @@ public class AttacheApiController {
 
             // 1. 파일 저장 (FileUtil에서)
             UploadMode uploadMode = UploadMode.valueOf(mode);
-            FileSaveResultDTO fileDto = customFileUtil.saveEditorImageFile(file, uploadMode, identifier);  // DTO 반환
+            FileSaveResultDTO fileDto = imageUploadUtil.saveEditorImageFile(file, uploadMode, identifier);  // DTO 반환
 
             // 2. 서비스에서 Attachment 엔티티 생성 하고 DB에 저장
-            Attachment attachment = attachmentService.uploadEditorImageFile(fileDto);
+            Attachment attachment = imageUploadService.uploadEditorImageFile(fileDto);
 
             // 3. 에디터가 요구하는 응답 포맷
             return ResponseEntity.ok(Map.of(
@@ -100,7 +98,7 @@ public class AttacheApiController {
         //List<String> storedNames = request.getStoredNames();
 
         // 서비스 호출
-        attachmentService.cleanupUnusedTempImages(request);
+        imageUploadService.cleanupUnusedTempImages(request);
 
         return ResponseEntity.ok().build();
     }

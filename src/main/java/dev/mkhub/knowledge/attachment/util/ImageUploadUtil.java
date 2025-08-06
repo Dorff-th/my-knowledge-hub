@@ -22,7 +22,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CustomFileUtil {
+public class ImageUploadUtil {
 
     //application.yml 에 설정한  에디터 이미지 첨부파일. 실제 서버 경로 값을 가져온다.
     @Value("${file.upload.path.images.base-dir}")
@@ -32,15 +32,12 @@ public class CustomFileUtil {
     @Value("${file.upload.path.images.public-url}")
     private String imagePublicUrl;
 
-    //application.yml 에 설정한  일반 첨부파일 uploadpath값을 가져온다
-    @Value("${file.upload.path.attachments}")
-    private String attachmentsPath;
+
 
     //에디터 이미지 첨부, 일반 첨부 둘다 초기화
         @PostConstruct
         public void init() {
             initPath(imageBaseDir);
-            initPath(attachmentsPath);
         }
 
         private void initPath(String path) {
@@ -48,23 +45,13 @@ public class CustomFileUtil {
             if (!dir.exists()) {
                 dir.mkdirs(); // 하위 디렉토리까지 생성
             }
-            log.info("Upload path initialized: {}", dir.getAbsolutePath());
+            log.info("Editor Image Upload path initialized: {}", dir.getAbsolutePath());
         }
 
     /** ✅ 단일 파일 저장 (에디터용 이미지) */
     public FileSaveResultDTO saveEditorImageFile(MultipartFile file, UploadMode mode, String identifier) {
         return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString(), mode, identifier);
     }
-
-    /** ✅ 다중 파일 저장 (일반 첨부파일) */
-    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, UploadMode mode, String identifier) {
-        List<FileSaveResultDTO> results = new ArrayList<>();
-        for (MultipartFile file : files) {
-            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString(), mode, identifier));
-        }
-        return results;
-    }
-
 
 
     private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, UploadMode mode, String identifier) {

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
+public interface ImageUploadRepository extends JpaRepository<Attachment, Long> {
 
     List<Attachment> findByPostId(Long postId);
 

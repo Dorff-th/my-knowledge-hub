@@ -4,9 +4,9 @@ import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
 import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
 import dev.mkhub.knowledge.attachment.enums.UploadMode;
-import dev.mkhub.knowledge.attachment.repository.AttachmentRepository;
+import dev.mkhub.knowledge.attachment.repository.ImageUploadRepository;
 import dev.mkhub.knowledge.post.domain.Post;
-import dev.mkhub.knowledge.attachment.util.CustomFileUtil;
+import dev.mkhub.knowledge.attachment.util.ImageUploadUtil;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AttachmentService {
+public class ImageUploadService {
 
-    private final AttachmentRepository attachmentRepository;
-    private final CustomFileUtil fileUtil;
+    private final ImageUploadRepository imageUploadRepository;
+    private final ImageUploadUtil fileUtil;
     private final PostRepository postRepository;
 
     //에디터 이미지 첨부파일 저장
@@ -50,7 +50,7 @@ public class AttachmentService {
             builder.post(null);  // 작성 중이거나 tempKey 기반일 때
         }
 
-        return attachmentRepository.save(builder.build());
+        return imageUploadRepository.save(builder.build());
 
     }
 
@@ -71,7 +71,7 @@ public class AttachmentService {
                 .toList();
 
 
-        return attachmentRepository.saveAll(attachments);
+        return imageUploadRepository.saveAll(attachments);
     }
 
     //작성중인 post에 첨부한(삽입한) 이미지를 다시 삭제할때 삭제 대상 file_name으로 찾아서 삭제
@@ -84,7 +84,7 @@ public class AttachmentService {
             List<String> storedNames = request.getStoredNames();
 
             //삭제 대상 storedNames(즉 fileName들)을 조회하여
-            List<Attachment> unusedTempImages = attachmentRepository.findUnusedImagesByTempKey(tempKey, storedNames);
+            List<Attachment> unusedTempImages = imageUploadRepository.findUnusedImagesByTempKey(tempKey, storedNames);
 
             //삭제대상 storeName 콘솔로 확인
             log.debug("\n\n\n====삭제대상 storeName 콘솔로 확인");
@@ -97,14 +97,14 @@ public class AttachmentService {
                     .collect(Collectors.toList());
 
             if (!unusedFileNames.isEmpty()) {
-                attachmentRepository.deleteByTempKeyAndStoredNamesByTempKey(tempKey, unusedFileNames);
+                imageUploadRepository.deleteByTempKeyAndStoredNamesByTempKey(tempKey, unusedFileNames);
             }
 
         } else if(request.getMode() == UploadMode.UPDATE) {
             // TODO: 기존 postId 기반 미사용 이미지 정리 로직
             Long postId = request.getPostId();
             List<String> storedNames = request.getStoredNames();
-            List<Attachment> unusedTempImages = attachmentRepository.findUnusedImagesByPostId(postId, storedNames);
+            List<Attachment> unusedTempImages = imageUploadRepository.findUnusedImagesByPostId(postId, storedNames);
 
             //삭제 대상 storedNames(즉 fileName들)을 조회하여
             //삭제대상 storeName 콘솔로 확인
@@ -118,7 +118,7 @@ public class AttachmentService {
                     .collect(Collectors.toList());
 
             if (!unusedFileNames.isEmpty()) {
-                attachmentRepository.deleteByTempKeyAndStoredNamesByPostId(postId, unusedFileNames);
+                imageUploadRepository.deleteByTempKeyAndStoredNamesByPostId(postId, unusedFileNames);
             }
 
         }
