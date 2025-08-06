@@ -7,6 +7,7 @@ import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.member.repository.MemberRepository;
 import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.post.dto.PostRequestDTO;
+import dev.mkhub.knowledge.post.dto.PostUpdateDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.dto.PostDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
@@ -80,7 +81,13 @@ public class PostService {
         return savedPost;
     }
 
-    public Post editPost(PostRequestDTO dto) {
+    //Post 수정요청할때 필요한 해당 post 작성자(Member) id값을 조회하기 위해 필요
+    public Optional<Post> getPostById(Long id) {
+        return postRepository.findById(id);
+    }
+
+
+    public Post editPost(PostUpdateDTO dto) {
 
         Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(()->new IllegalArgumentException("사용자가 없습니다."));
         Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->new IllegalArgumentException("카테고리가 없습니다."));
@@ -89,6 +96,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
         return savedPost;
     }
+
 
     //Post 삭제
     @Transactional

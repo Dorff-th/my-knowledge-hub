@@ -8,6 +8,7 @@ import dev.mkhub.knowledge.post.dto.PostDetailDTO;
 import dev.mkhub.knowledge.common.dto.PageRequestDTO;
 import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.post.dto.PostRequestDTO;
+import dev.mkhub.knowledge.post.dto.PostUpdateDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.post.service.PostService;
@@ -139,7 +140,15 @@ public class PostController {
     }
 
     //Post 수정 처리
-    public String editPost(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostRequestDTO dto) {
+    @PostMapping("/{id}/edit")
+    public String editPost(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostUpdateDTO dto) {
+
+        Post post = postService.getPostById(dto.getId())
+                .orElseThrow(()-> new IllegalArgumentException("Post가 존재하지 않습니다!"));
+
+        if(post.getMember().getId().equals(loginUser.getId())) {
+            new AccessDeniedException("권한이 없습니다.");
+        }
 
         Long memberId = loginUser.getId();
         dto.setMemberId(memberId);
@@ -152,7 +161,17 @@ public class PostController {
 
     //Post 삭제 - 연관관계에 있는 Attachement, Comment 도 함께 삭제
     @PostMapping("/{id}/delete")
-    public String deletePost(@PathVariable("id") Long id) {
+    public String deletePost(@PathVariable("id") Long id,
+                             @AuthenticationPrincipal MemberDetails loginUser) {
+
+
+        Post post = postService.getPostById(id)
+                .orElseThrow(()-> new IllegalArgumentException("Post가 존재하지 않습니다!"));
+
+        if(post.getMember().getId().equals(loginUser.getId())) {
+            new AccessDeniedException("권한이 없습니다.");
+        }
+
         postService.deletePost(id);
 
         return  "redirect:/posts?fromDelete=true";

@@ -4,15 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 /**
- * 신규 Post 등록 요청에 사용되는 DTO
+ *   기존 Post 수정 요청을 하는 DTO
  */
-@ToString
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class PostRequestDTO {
+public class PostUpdateDTO {
 
+    private Long id;
     @NotBlank(message = "{NotBlankPostTitle}")
     private String title;
 
@@ -22,7 +23,4 @@ public class PostRequestDTO {
     private Long memberId;
 
     private Long categoryId;
-
-    private String tempKey;
-
 }
