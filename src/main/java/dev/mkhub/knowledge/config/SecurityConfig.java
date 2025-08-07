@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/posts/write", "/posts/*/edit", "/posts/*/delete", "/api/comments/**").hasAnyRole("USER", "ADMIN") // ✅ 로그인 필요
                         .requestMatchers("/", "/posts", "/posts/**", "/api/**", "/search/**").permitAll() // ✅ 공개
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/download/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

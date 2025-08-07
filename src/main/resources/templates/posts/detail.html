@@ -31,6 +31,19 @@
                 </p>-->
             </div>
 
+            <!-- 첨부파일 표출 영역 -->
+            <div class="prose prose-lg max-w-none">
+                <ul class="space-y-2">
+                    <li th:each="attach : ${attachments}">
+                        <a th:href="@{/download/{id}(id=${attach.id})}"
+                           th:text="${attach.originalName + ' (' + attach.fileSizeText + ')'}"
+                           class="text-blue-600 hover:underline download-link inline-block transition-colors duration-150">
+                            파일명(용량)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <!-- 삭제 버튼 -->
             <div class="mt-6" th:if="${loginUserId != null and post.memberId == loginUserId}">
                 <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" class="inline-form">
@@ -120,6 +133,22 @@
             showInfoToast("Post 수정이 완료되었습니다.");
             localStorage.removeItem("tempPostKey");
         }
+
+        // 다운로드 링크 클릭시 로딩 방지 (이것을 안하면 다운로드 이후 무한로딩 걸림)
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("form").forEach(form => {
+                form.addEventListener("submit", () => {
+                    showLoading(); // ✅ form 전송일 때만 로딩
+                });
+            });
+
+            // ✅ 다운로드 링크 클릭 시 로딩 제거
+            document.querySelectorAll(".download-link").forEach(link => {
+                link.addEventListener("click", () => {
+                    hideLoading(); // 혹시 띄워져 있다면 제거
+                });
+            });
+        })
     </script>
 </div>
 </body>

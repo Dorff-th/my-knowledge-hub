@@ -14,7 +14,7 @@
             <h2 class="text-2xl font-bold mb-6">📝 새 글 작성</h2>
 
             <!-- 글쓰기 폼 -->
-            <form th:action="@{/posts/write}" method="post" id="postForm">
+            <form th:action="@{/posts/write}" method="post" id="postForm"  enctype="multipart/form-data">
                 <!-- tempKey hidden 필드 -->
                 <input type="hidden" name="tempKey" id="tempKey" />
                 <div class="mb-4">
@@ -39,6 +39,15 @@
                 <div id="editor" class="mb-4"></div>
                 <textarea id="content" name="content" hidden></textarea>
 
+                <!-- 첨부파일 영역  start -->
+                <div id="attachment-list">
+                    <!-- 첨부 파일 input이 들어갈 자리 -->
+                </div>
+                <button type="button" id="add-attachment" class="text-blue-600 font-bold">+ 첨부파일 추가</button>
+                <span id="file-limit-msg" class="text-sm text-gray-500 ml-2"></span>
+
+                <!--첨부파일 영역 end -->
+
                 <div class="mt-6">
                     <a href="/posts"
                        class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
@@ -53,11 +62,58 @@
                     </button>
                 </div>
             </form>
+
+            <!-- 첨부파일 히든 템플릿 -->
+            <div id="attachment-template" class="hidden">
+                <div class="flex items-center gap-2 mb-2 attachment-item">
+                    <input type="file" name="attachments" class="file-input" />
+                    <button type="button" class="text-red-500 remove-btn">✖</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </main>
 <div layout:fragment="page-script">
     <script th:inline="none">
+
+        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
+
+        const maxFiles = 3;
+        const list = document.getElementById('attachment-list');
+        const template = document.getElementById('attachment-template');
+        const addBtn = document.getElementById('add-attachment');
+        const limitMsg = document.getElementById('file-limit-msg');
+
+        function updateAddButtonState() {
+            const count = list.querySelectorAll('.attachment-item').length;
+            addBtn.disabled = count >= maxFiles;
+            limitMsg.textContent = count >= maxFiles ? '최대 5개까지 첨부 가능합니다.' : '';
+        }
+
+        addBtn.addEventListener('click', () => {
+            const newItem = template.cloneNode(true);
+            newItem.classList.remove('hidden');
+            newItem.removeAttribute('id');
+            list.appendChild(newItem);
+            updateAddButtonState();
+        });
+
+        list.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                e.target.closest('.attachment-item').remove();
+                updateAddButtonState();
+            }
+        });
+
+        // 처음 1개는 자동 추가
+        addBtn.click();
+
+        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
+
+
+        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
+
         // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
 
         let tempKey = localStorage.getItem("tempPostKey");
@@ -98,7 +154,9 @@
                 }
             }
         });
+        /*  @@@@@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@@  */
 
+        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 START(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
         //저장 실행 함수
         function submitPost() {
             //1.마크다운 내용 가져와서 content 에 넣기
@@ -132,11 +190,18 @@
             console.log("tempKey : " + tempKey);
             console.log(storedNames);
 
+            //전송 이전에 빈 file 인퓻 제거
+            document.querySelectorAll("input[type='file']").forEach(input => {
+                if (input.files.length === 0) {
+                    input.remove();
+                }
+            });
+
             //5. 모든 작업 완료 후 폼 제출
             document.getElementById("postForm").submit();
 
         } // submitPost() 함수 종료
-
+       /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 END(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
     </script>
 </div>

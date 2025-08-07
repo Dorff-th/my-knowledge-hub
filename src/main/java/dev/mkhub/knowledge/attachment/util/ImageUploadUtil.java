@@ -50,11 +50,11 @@ public class ImageUploadUtil {
 
     /** ✅ 단일 파일 저장 (에디터용 이미지) */
     public FileSaveResultDTO saveEditorImageFile(MultipartFile file, UploadMode mode, String identifier) {
-        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE.toString(), mode, identifier);
+        return saveSingleFile(file, imageBaseDir, UploadType.EDITOR_IMAGE, mode, identifier);
     }
 
 
-    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, UploadMode mode, String identifier) {
+    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, UploadType uploadType, UploadMode mode, String identifier) {
         try {
             String originalName = file.getOriginalFilename();
             String savedName = UUID.randomUUID() + "_" + originalName;

@@ -48,7 +48,7 @@ logging:
   level:
     root: info
     # MyBatis Mapper 로그
-    dev.mkhub.knowledge.search.mapper: DEBUG       # ← 너의 Mapper 패키지명
+    dev.mkhub.knowledge: DEBUG       # ← 너의 Mapper 패키지명
     org.apache.ibatis: DEBUG                # MyBatis 내부 SQL 로그
     org.mybatis: DEBUG                      # MyBatis 스프링 연동 로그
 

@@ -1,5 +1,6 @@
 package dev.mkhub.knowledge.attachment.domain;
 
+import dev.mkhub.knowledge.attachment.enums.UploadType;
 import dev.mkhub.knowledge.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +37,9 @@ public class Attachment {
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
 
-    private String uploadType;  // 첨부파일형식 : 에디터 이미지 첨부파일(EDITOR_IMAGE), 일반 첨부파일(ATTACHMENT)
+    @Enumerated(EnumType.STRING) // ← 반드시 추가!
+    @Column(name = "upload_type")
+    private UploadType uploadType;  // 첨부파일형식 : 에디터 이미지 첨부파일(EDITOR_IMAGE), 일반 첨부파일(ATTACHMENT)
 
     // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키
     // post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자

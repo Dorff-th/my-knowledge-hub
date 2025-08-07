@@ -4,6 +4,7 @@ import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
 import dev.mkhub.knowledge.attachment.dto.TempImageCleanupRequestDTO;
 import dev.mkhub.knowledge.attachment.enums.UploadMode;
+import dev.mkhub.knowledge.attachment.enums.UploadType;
 import dev.mkhub.knowledge.attachment.repository.ImageUploadRepository;
 import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.attachment.util.ImageUploadUtil;

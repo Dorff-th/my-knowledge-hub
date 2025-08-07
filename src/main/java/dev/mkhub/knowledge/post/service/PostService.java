@@ -1,6 +1,10 @@
 package dev.mkhub.knowledge.post.service;
 
+import dev.mkhub.knowledge.attachment.domain.Attachment;
+import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
+import dev.mkhub.knowledge.attachment.repository.AttachmentRepository;
 import dev.mkhub.knowledge.attachment.repository.ImageUploadRepository;
+import dev.mkhub.knowledge.attachment.util.GeneralFileUtil;
 import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.member.domain.Member;
 import dev.mkhub.knowledge.post.domain.Post;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +44,9 @@ public class PostService {
     private final CategoryRepository categoryRepository;
 
     private final ImageUploadRepository imageUploadRepository;
+
+    private final GeneralFileUtil generalFileUtil;
+    private final AttachmentRepository attachmentRepository;
 
     //post 페이징(목록)
     public PageResponseDTO<PostDTO> getPostList(PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
@@ -63,6 +71,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public Post createPost(PostRequestDTO dto) {
         Member member = memberRepository.findById(dto.getMemberId()).orElseThrow(()->new IllegalArgumentException("사용자가 없습니다."));
         Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->new IllegalArgumentException("카테고리가 없습니다."));
@@ -70,6 +79,27 @@ public class PostService {
         Post post = new Post(dto.getTitle(), dto.getContent(), member, category);
 
         Post savedPost = postRepository.save(post);
+
+        //첨부파일 저장
+        if(!dto.getAttachments().isEmpty() && dto.getAttachments() != null) {
+            List<FileSaveResultDTO> fileSaveResultDTO= generalFileUtil.saveFiles(dto.getAttachments(), savedPost.getId());
+            //fileSaveResultDTO.forEach(fileSaveDTO->log.debug("fileSaveDTO :" , fileSaveDTO.toString()));
+
+            List<Attachment> attachments = fileSaveResultDTO.stream()
+                    .map(saveDto -> Attachment.builder()
+                            .post(post)
+                            .fileName(saveDto.getFileName())
+                            .originFileName(saveDto.getOriginFileName())
+                            .fileType(saveDto.getFileType())
+                            .fileSize(saveDto.getSize())
+                            .fileUrl(saveDto.getFileUrl())
+                            .uploadType(saveDto.getUploadType())
+                            .uploadedAt(LocalDateTime.now())
+                            .build())
+                    .toList();
+
+            attachmentRepository.saveAll(attachments);
+        }
 
         //에디터에 첨부된 이미지 파일 정보에 저장된 post id 업데이트
         String tempKey = dto.getTempKey();

@@ -1,5 +1,9 @@
 package dev.mkhub.knowledge.post.controller;
 
+import dev.mkhub.knowledge.attachment.dto.AttachmentViewDTO;
+import dev.mkhub.knowledge.attachment.enums.UploadType;
+import dev.mkhub.knowledge.attachment.service.AttachmentService;
+import dev.mkhub.knowledge.attachment.util.FormatFileSize;
 import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.post.domain.Post;
 import dev.mkhub.knowledge.member.security.MemberDetails;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -36,6 +41,8 @@ public class PostController {
     private final PostService postService;
 
     private final CategoryService categoryService;
+
+    private final AttachmentService attachmentService;
 
     //게시글 목록
     @GetMapping("")
@@ -78,6 +85,22 @@ public class PostController {
         model.addAttribute("loginUserId",
                 loginUser != null ? loginUser.getMember().getId() : null);
 
+        UploadType uploadType = UploadType.ATTACHMENT;
+
+        //첨부파일 목록 조회
+        attachmentService.attachmentsByPostId(id, uploadType).forEach(attachment -> {log.debug(attachment.getOriginFileName());});
+
+        List<AttachmentViewDTO> attachmentViewDTOList = attachmentService.attachmentsByPostId(id, uploadType).stream()
+                .map(attachment -> AttachmentViewDTO.builder()
+                        .id(attachment.getId())
+                        .originalName(attachment.getOriginFileName())
+                        .fileSizeText(FormatFileSize.formatFileSize(attachment.getFileSize()))
+                        .uploadType(attachment.getUploadType())
+                        .build())
+                .collect(Collectors.toList());
+
+        model.addAttribute("attachments", attachmentViewDTOList);
+
         return "posts/detail";
     }
 
@@ -103,9 +126,10 @@ public class PostController {
         return "posts/writer";
     }
 
+
     @PostMapping("/write")
     public String createNewPost(@AuthenticationPrincipal MemberDetails loginUser,
-                               PostRequestDTO dto) {
+                                PostRequestDTO dto) {
 
         Long memberId = loginUser.getId();
         dto.setMemberId(memberId);

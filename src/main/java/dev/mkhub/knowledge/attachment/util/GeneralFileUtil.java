@@ -1,20 +1,27 @@
 package dev.mkhub.knowledge.attachment.util;
 
 import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
-import dev.mkhub.knowledge.attachment.enums.UploadMode;
+
 import dev.mkhub.knowledge.attachment.enums.UploadType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.core.io.Resource;
 
 @Component
 @RequiredArgsConstructor
@@ -39,15 +46,15 @@ public class GeneralFileUtil {
     }
 
     /** ✅ 다중 파일 저장 (일반 첨부파일) */
-    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, UploadMode mode, String identifier) {
+    public List<FileSaveResultDTO> saveFiles(List<MultipartFile> files, Long postId) {
         List<FileSaveResultDTO> results = new ArrayList<>();
         for (MultipartFile file : files) {
-            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT.toString(), mode, identifier));
+            results.add(saveSingleFile(file, attachmentsPath, UploadType.ATTACHMENT, postId));
         }
         return results;
     }
 
-    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, String uploadType, UploadMode mode, String identifier) {
+    private FileSaveResultDTO saveSingleFile(MultipartFile file, String uploadDir, UploadType uploadType, Long postId) {
         try {
             String originalName = file.getOriginalFilename();
             String savedName = UUID.randomUUID() + "_" + originalName;
@@ -55,35 +62,53 @@ public class GeneralFileUtil {
             File target = new File(uploadDir, savedName);
             file.transferTo(target);
 
-            // public URL 생성 (※ /uploads/images/ 는 설정된 정적 매핑 경로에 따라 조정)
-            //String publicUrl = "/uploads/images/" + savedName;   (일반 첨부파일 구현시 수정 필요)
-            String imagePublicUrl = "/uploads/images/" + savedName;
-
-
             FileSaveResultDTO.FileSaveResultDTOBuilder builder = FileSaveResultDTO.builder()
                     .fileName(savedName)
                     .originFileName(originalName)
                     .fileUrl(uploadDir + savedName)     // 실제 파일이 서버의 물리경로
-                    .publicUrl(imagePublicUrl)             // 외부 경로
+                    .publicUrl(null)             // 외부 경로
                     .fileType(file.getContentType())
                     .size(file.getSize())
-                    .uploadType(uploadType);
-
-            if (mode == UploadMode.CREATE) {
-                builder.tempKey(identifier);
-            } else if (mode == UploadMode.UPDATE) {
-                try {
-                    builder.postId(Long.parseLong(identifier));  // 🔥 여기를 Long으로 변환
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("postId(identifier) 값이 숫자가 아닙니다: " + identifier);
-                }
-            }
+                    .uploadType(uploadType)
+                    .tempKey(null)          // 추후 작성중인 게시물 임시저장 기능이 필요할때 고려
+                    .postId(postId);
 
             FileSaveResultDTO resultDTO = builder.build();
 
             return resultDTO;
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 실패: " + file.getOriginalFilename(), e);
+        }
+    }
+
+    /**
+     * 지정된 경로의 파일을 다운로드 가능한 형태로 반환
+     *
+     * @param fullPath       서버 내부 저장 경로 (ex: /uploads/attachments/UUID_filename.txt)
+     * @param originalName   사용자가 업로드한 원본 파일명
+     * @return ResponseEntity<Resource> → 파일 다운로드 응답
+     */
+    public ResponseEntity<Resource> getDownloadResponse(String fullPath, String originalName) {
+        try {
+            File file = new File(fullPath);
+            if (!file.exists()) {
+                throw new RuntimeException("파일이 존재하지 않습니다: " + fullPath);
+            }
+
+            FileSystemResource resource = new FileSystemResource(file);
+
+            String encodedFileName = URLEncoder.encode(originalName, StandardCharsets.UTF_8)
+                    .replaceAll("\\+", "%20");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + encodedFileName + "\"")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(resource.contentLength()))
+                    .body(resource);
+
+        } catch (Exception e) {
+            log.error("파일 다운로드 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("파일 다운로드 중 오류가 발생했습니다.");
         }
     }
 
