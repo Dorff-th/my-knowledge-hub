@@ -83,19 +83,8 @@
         //최대 첨부 제한 개수
         const MAX_FILES = 3;
 
-        function updateCounter() {
-
-            const total = document.querySelector('#fileInput').files.length;
-
-            if (total > MAX_FILES) {
-                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
-                document.querySelector('#fileInput').value = ''; // 파일 초기화
-            }
-        }
-
         // 새 파일 업로드 시 개수 체크
         document.querySelector('#fileInput').addEventListener('change', updateCounter);
-
 
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
@@ -122,6 +111,7 @@
         });
 
         function renderFileList() {
+
             fileList.innerHTML = '';
 
             selectedFiles.forEach((file, index) => {
@@ -157,7 +147,28 @@
             fileInput.files = dataTransfer.files;
         }
 
+        function updateCounter() {
 
+            //file Input에서 선택된 파일개수
+            const fileInputCount = document.querySelector('#fileInput').files.length;
+            //file input에서 선택된 파일개수가 아닌 이 표시된 파일 목록(li) 개수
+            const fileListLength = document.querySelectorAll('#fileList li').length;
+            const total = fileInputCount + fileListLength;
+
+            if (total > MAX_FILES) {
+                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
+                setTimeout(() => { resetAll() }, 10);
+            }
+        }
+
+        //완전 초기화를 위한 트릭
+        function resetAll() {
+             fileInput.value = '';
+             fileInput.type = 'text';
+             fileInput.type = 'file';
+             fileList.innerHTML = '';
+             selectedFiles = [];
+        }
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
 

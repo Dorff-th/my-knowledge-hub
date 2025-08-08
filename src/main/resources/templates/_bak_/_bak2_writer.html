@@ -11,20 +11,19 @@
         <div class="bg-white p-6 rounded-lg shadow-md">
 
             <!-- 제목 -->
-            <h2 class="text-2xl font-bold mb-6">📝 Post 수정</h2>
+            <h2 class="text-2xl font-bold mb-6">📝 새 글 작성</h2>
 
             <!-- 글쓰기 폼 -->
-            <form th:action="@{/posts/{id}/edit(id=${post.id})}" method="post" id="postForm"  enctype="multipart/form-data">
-
-                <input type="hidden" name="id" id="postId" th:value="${post.id}" />
+            <form th:action="@{/posts/write}" method="post" id="postForm"  enctype="multipart/form-data">
+                <!-- tempKey hidden 필드 -->
+                <input type="hidden" name="tempKey" id="tempKey" />
                 <div class="mb-4">
                     <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-2">📂 카테고리 선택</label>
                     <select id="categoryId" name="categoryId"
                             class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option th:each="category : ${categories}"
                                 th:value="${category.id}"
-                                th:text="${category.name}"
-                                th:selected="${category.id == post.categoryId}">
+                                th:text="${category.name}">
                         </option>
                     </select>
                 </div>
@@ -33,7 +32,6 @@
                 <label class="block mb-2 text-sm font-medium text-gray-700">제목</label>
                 <input type="text" name="title" placeholder="제목을 입력하세요"
                        class="w-full px-4 py-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring focus:ring-blue-200"
-                       th:value="${post.title}"
                        required>
 
                 <!-- Toast UI Editor 영역 -->
@@ -41,17 +39,7 @@
                 <div id="editor" class="mb-4"></div>
                 <textarea id="content" name="content" hidden></textarea>
 
-                <!-- 기존 첨부파일 영역  start -->
-                <div id="attachment-list" class="space-y-2">
-                    <th:block th:each="attach : ${attachments}">
-                        <div class="flex items-center justify-between bg-gray-100 p-2 rounded" th:attr="data-attach-id=${attach.id}">
-                            <span th:text="${attach.originalName}">project-plan.pdf</span>
-                            <button type="button" class="text-red-500 delete-toggle">삭제</button>
-                        </div>
-                    </th:block>
-                </div>
-
-                <!-- 업로드 input  영역 -->
+                <!-- 첨부파일 영역  start -->
                 <div class="space-y-4">
                     <label class="block">
                         <span class="text-gray-700 font-semibold">첨부파일</span>
@@ -63,89 +51,45 @@
                                     file:bg-blue-50 file:text-blue-700
                                 hover:file:bg-blue-100">
                     </label>
-                    <!-- 선택한 파일 목록 : 신규로 선택한 파일 목록이 표출 -->
+                    <!-- 선택한 파일 목록 -->
                     <ul id="fileList" class="space-y-2"></ul>
                 </div>
 
-                <!-- 숨겨진 삭제 목록 필드 -->
-                <input type="hidden" name="deleteIds" id="delete-ids" />
+                <!--첨부파일 영역 end -->
 
                 <div class="mt-6">
-                    <a th:href="@{/posts/{id}(id=${post.id})}"
+                    <a href="/posts"
                        class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
-                        ← 수정취소
+                        ← 목록으로
                     </a>
                 </div>
 
-                <!-- 버튼 -->
                 <div class="flex justify-end mt-6">
                     <button type="button" onclick="submitPost()"
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-                        수정 완료
+                        작성 완료
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
-    <!-- 서버로 부터 읽어드린 post의 content -->
-    <textarea id="existingContent" style="display:none;" th:text="${post.content}"></textarea>
-
-
-
 </main>
 <div layout:fragment="page-script">
     <script th:inline="none">
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
+
+        //최대 첨부 제한 개수
         const MAX_FILES = 3;
-        const deleteSet = new Set();
-
-        function updateCounter() {
-            const existingCount = document.querySelectorAll('#attachment-list .bg-gray-100:not(.marked-delete)').length;    // 기존 첨부
-            const newCount = document.querySelector('#fileInput').files.length;             // 파일 인퓻에서 선택된 파일 개수
-            const fileListLength = document.querySelectorAll('#fileList li').length;        // 파일 인퓻에서 선택되어 표시된 파일 목록(li) 개수
-            const total = existingCount + newCount + fileListLength;
-
-            if (total > MAX_FILES) {
-                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
-                setTimeout(() => { resetAll() }, 10);
-
-            }
-        }
-
-        //완전 초기화를 위한 트릭
-        function resetAll() {
-             fileInput.value = '';
-             fileInput.type = 'text';
-             fileInput.type = 'file';
-             fileList.innerHTML = '';
-             selectedFiles = [];
-        }
-
-        // 삭제 토글 버튼 이벤트
-        document.querySelectorAll('.delete-toggle').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const item = e.target.closest('[data-attach-id]');
-                const id = item.dataset.attachId;
-
-                if (item.classList.toggle('marked-delete')) {
-                    item.classList.add('opacity-50');
-                    deleteSet.add(id);
-                    e.target.textContent = '삭제취소';
-                } else {
-                    item.classList.remove('opacity-50');
-                    deleteSet.delete(id);
-                    e.target.textContent = '삭제';
-                }
-                document.querySelector('#delete-ids').value = Array.from(deleteSet).join(',');
-            });
-        });
 
         // 새 파일 업로드 시 개수 체크
         document.querySelector('#fileInput').addEventListener('change', updateCounter);
 
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
 
-        // 현재까지 (신규로) 선택된 파일들을 보관할 배열
+        // 현재까지 선택된 파일들을 보관할 배열
         let selectedFiles = [];
 
         fileInput.addEventListener('change', () => {
@@ -166,8 +110,8 @@
             renderFileList();
         });
 
-        //신규로 선택한 파일을 화면에 표출
         function renderFileList() {
+
             fileList.innerHTML = '';
 
             selectedFiles.forEach((file, index) => {
@@ -189,44 +133,71 @@
             });
         }
 
-        //신규로 선택한 파일을 삭제
+        // 파일 삭제
         function removeFile(index) {
             selectedFiles.splice(index, 1);
             updateInputFiles();
             renderFileList();
         }
 
-        // 신규로 선택한 파일을 FileList를 새로 만들어 input에 반영
+        // FileList를 새로 만들어 input에 반영
         function updateInputFiles() {
             const dataTransfer = new DataTransfer();
             selectedFiles.forEach(file => dataTransfer.items.add(file));
             fileInput.files = dataTransfer.files;
         }
 
+        function updateCounter() {
+
+            //file Input에서 선택된 파일개수
+            const fileInputCount = document.querySelector('#fileInput').files.length;
+            //file input에서 선택된 파일개수가 아닌 이 표시된 파일 목록(li) 개수
+            const fileListLength = document.querySelectorAll('#fileList li').length;
+            const total = fileInputCount + fileListLength;
+
+            if (total > MAX_FILES) {
+                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
+                //document.querySelector('#fileInput').value = '';
+                setTimeout(() => { fileInput.value = ''; }, 1);
+
+                //file 인퓻으로 선택되어 화면에 표시된 파일이름 목록도 초기화
+                setTimeout(() => { fileList.innerHTML = ''; }, 1);
+
+            }
+        }
+
+
+
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
 
-
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
-        //const existingContent = /*[[${post.content}]]*/ '';
-        const existingContent = document.getElementById("existingContent").textContent;
 
+        // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
 
-        //postId를 기준으로 사용하지 않는 Attachment를 삭제하거나 새로운 이미지를 추가할때 필요
-        const postId = document.getElementById('postId').value;
+        let tempKey = localStorage.getItem("tempPostKey");
+        if (!tempKey) {
+            tempKey = crypto.randomUUID();
+            localStorage.setItem("tempPostKey", tempKey);
+        }
+
+        const formHiddenTempKey = document.getElementById('tempKey');
+        if(!formHiddenTempKey.value) {
+            formHiddenTempKey.value = tempKey;
+        }
 
         const editor = new toastui.Editor({
             el: document.querySelector('#editor'),
             height: '400px',
             initialEditType: 'markdown',
             previewStyle: 'vertical',
-            initialValue: existingContent,  // ← 이 부분!
+            placeholder: '내용을 작성하세요...',
             hooks: {
                 addImageBlobHook: async (blob, callback) => {
                     const formData = new FormData();
-                    formData.append('image', blob); // blob은 File 객체
-                    formData.append("mode", "UPDATE");
-                    formData.append("identifier", postId);
+                    formData.append('image', blob);             //image
+                    formData.append("mode", "CREATE");            //새로운 post 작성시 첨부되는 임시 이미지라는 뜻 (TEMP -> CREATE 변경)
+                    formData.append("identifier", tempKey);     //새로운 post 작성시 identifier 값은 tempKey(UUID로 생성한 localStorage에 저장되는 값 )
 
                     const response = await fetch('/api/images/upload', {
                         method: 'POST',
@@ -234,8 +205,7 @@
                     });
 
                     const result = await response.json();
-
-                    if (result.success === 1) {
+                     if (result.success === 1) {
                         callback(result.url, 'image');
                     } else {
                         alert(result.message || "이미지 업로드 실패");
@@ -246,44 +216,51 @@
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@@  */
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 START(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
-
         //저장 실행 함수
         function submitPost() {
             //1.마크다운 내용 가져와서 content 에 넣기
             const content = editor.getMarkdown();
             document.getElementById('content').value = content;
 
-            // 2. 정규표현식으로 이미지 경로 추출 (예: ![](/uploads/images/xxx.png))
+             // 2. 정규표현식으로 이미지 경로 추출 (예: ![](/uploads/images/xxx.png))
             const imageUrls = Array.from(content.matchAll(/!\[[^\]]*]\((\/uploads\/images\/[^)]+)\)/g))
-                                         .map(match => match[1]); // 괄호 안의 경로만 추출
+                                .map(match => match[1]); // 괄호 안의 경로만 추출
 
-            // 3. 이미지 경로에서 파일명(storedName)만 추출 ( 즉, fileName을 추출)
+             // 3. 이미지 경로에서 파일명(storedName)만 추출 ( 즉, fileName을 추출)
             const storedNames = imageUrls.map(url => {
                 const parts = url.split('/');
                 return parts[parts.length - 1]; // 파일명만 추출
             });
 
-            // 4. 서버에 이미지 정리 요청 보내기
-            fetch("/api/images/temp/cleanup", {
+             // 4. 서버에 이미지 정리 요청 보내기
+             fetch("/api/images/temp/cleanup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    postId: postId,
-                    mode : "UPDATE",
+                    tempKey: tempKey,
+                    mode : "CREATE",
                     storedNames: storedNames
                 })
             });
 
-            //기존 첨부파일 삭제 예정
-            console.log('삭제 예정:', Array.from(deleteSet));
+            //디버깅
+            console.log("tempKey : " + tempKey);
+            console.log(storedNames);
+
+            //전송 이전에 빈 file 인퓻 제거
+            document.querySelectorAll("input[type='file']").forEach(input => {
+                if (input.files.length === 0) {
+                    input.remove();
+                }
+            });
 
             //5. 모든 작업 완료 후 폼 제출
             document.getElementById("postForm").submit();
 
         } // submitPost() 함수 종료
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 END(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
+       /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 END(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
     </script>
 </div>
