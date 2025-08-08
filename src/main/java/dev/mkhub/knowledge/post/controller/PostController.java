@@ -146,8 +146,7 @@ public class PostController {
         //기존 Post 내용 조회
         PostDetailDTO post = postService.getPost(id).orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다."));
 
-        //System.out.println("\n\n\n===== post MemberId " + post.getMemberId());
-        //System.out.println("===== loginUser id " + loginUser.getId());
+
 
         if(!post.getMemberId().equals(loginUser.getId())) {
             System.out.println("권한없음");
@@ -161,6 +160,22 @@ public class PostController {
         //category 목록 조회
         List<Category> categories = categoryService.findAllCategory();
         model.addAttribute("categories", categories);
+
+        UploadType uploadType = UploadType.ATTACHMENT;
+
+        //첨부파일 목록 조회
+        attachmentService.attachmentsByPostId(id, uploadType).forEach(attachment -> {log.debug(attachment.getOriginFileName());});
+
+        List<AttachmentViewDTO> attachmentViewDTOList = attachmentService.attachmentsByPostId(id, uploadType).stream()
+                .map(attachment -> AttachmentViewDTO.builder()
+                        .id(attachment.getId())
+                        .originalName(attachment.getOriginFileName())
+                        .fileSizeText(FormatFileSize.formatFileSize(attachment.getFileSize()))
+                        .uploadType(attachment.getUploadType())
+                        .build())
+                .collect(Collectors.toList());
+
+        model.addAttribute("attachments", attachmentViewDTOList);
 
         return "posts/editor";
     }

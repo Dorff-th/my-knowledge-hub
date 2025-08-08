@@ -40,11 +40,20 @@
                 <textarea id="content" name="content" hidden></textarea>
 
                 <!-- 첨부파일 영역  start -->
-                <div id="attachment-list">
-                    <!-- 첨부 파일 input이 들어갈 자리 -->
+                <div class="space-y-4">
+                    <label class="block">
+                        <span class="text-gray-700 font-semibold">첨부파일</span>
+                        <input type="file" name="attachments" id="fileInput" multiple
+                               class="mt-2 block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100">
+                    </label>
+                    <!-- 선택한 파일 목록 -->
+                    <ul id="fileList" class="space-y-2"></ul>
                 </div>
-                <button type="button" id="add-attachment" class="text-blue-600 font-bold">+ 첨부파일 추가</button>
-                <span id="file-limit-msg" class="text-sm text-gray-500 ml-2"></span>
 
                 <!--첨부파일 영역 end -->
 
@@ -63,14 +72,6 @@
                 </div>
             </form>
 
-            <!-- 첨부파일 히든 템플릿 -->
-            <div id="attachment-template" class="hidden">
-                <div class="flex items-center gap-2 mb-2 attachment-item">
-                    <input type="file" name="attachments" class="file-input" />
-                    <button type="button" class="text-red-500 remove-btn">✖</button>
-                </div>
-            </div>
-
         </div>
     </div>
 </main>
@@ -79,35 +80,84 @@
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
-        const maxFiles = 3;
-        const list = document.getElementById('attachment-list');
-        const template = document.getElementById('attachment-template');
-        const addBtn = document.getElementById('add-attachment');
-        const limitMsg = document.getElementById('file-limit-msg');
+        //최대 첨부 제한 개수
+        const MAX_FILES = 3;
 
-        function updateAddButtonState() {
-            const count = list.querySelectorAll('.attachment-item').length;
-            addBtn.disabled = count >= maxFiles;
-            limitMsg.textContent = count >= maxFiles ? '최대 5개까지 첨부 가능합니다.' : '';
+        function updateCounter() {
+
+            const total = document.querySelector('#fileInput').files.length;
+
+            if (total > MAX_FILES) {
+                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
+                document.querySelector('#fileInput').value = ''; // 파일 초기화
+            }
         }
 
-        addBtn.addEventListener('click', () => {
-            const newItem = template.cloneNode(true);
-            newItem.classList.remove('hidden');
-            newItem.removeAttribute('id');
-            list.appendChild(newItem);
-            updateAddButtonState();
+        // 새 파일 업로드 시 개수 체크
+        document.querySelector('#fileInput').addEventListener('change', updateCounter);
+
+
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        // 현재까지 선택된 파일들을 보관할 배열
+        let selectedFiles = [];
+
+        fileInput.addEventListener('change', () => {
+            // 새로 선택한 파일들을 배열로 변환 후 기존 배열에 추가
+            selectedFiles = [...selectedFiles, ...Array.from(fileInput.files)];
+
+            // 중복 파일 제거 (같은 이름/크기 조합 기준)
+            selectedFiles = selectedFiles.filter(
+                (file, index, self) =>
+                    index === self.findIndex(f => f.name === file.name && f.size === file.size)
+            );
+
+            // input.files 갱신
+            const dt = new DataTransfer();
+            selectedFiles.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+
+            renderFileList();
         });
 
-        list.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-btn')) {
-                e.target.closest('.attachment-item').remove();
-                updateAddButtonState();
-            }
-        });
+        function renderFileList() {
+            fileList.innerHTML = '';
 
-        // 처음 1개는 자동 추가
-        addBtn.click();
+            selectedFiles.forEach((file, index) => {
+                const li = document.createElement('li');
+                li.className = "flex items-center justify-between bg-gray-50 p-2 rounded border";
+
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+                fileName.className = "text-gray-700 text-sm truncate";
+
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '×';
+                removeBtn.className = "text-red-500 font-bold px-2 hover:text-red-700";
+                removeBtn.addEventListener('click', () => removeFile(index));
+
+                li.appendChild(fileName);
+                li.appendChild(removeBtn);
+                fileList.appendChild(li);
+            });
+        }
+
+        // 파일 삭제
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateInputFiles();
+            renderFileList();
+        }
+
+        // FileList를 새로 만들어 input에 반영
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
