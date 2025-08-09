@@ -32,16 +32,17 @@
             </div>
 
             <!-- 첨부파일 표출 영역 -->
-            <div class="prose prose-lg max-w-none">
-                <ul class="space-y-2">
-                    <li th:each="attach : ${attachments}">
+
+            <div id="attachment-list" class="space-y-2">
+                <th:block th:each="attach : ${attachments}">
+                    <div class="flex items-center justify-between bg-gray-100 p-2 rounded">
                         <a th:href="@{/download/{id}(id=${attach.id})}"
                            th:text="${attach.originalName + ' (' + attach.fileSizeText + ')'}"
                            class="text-blue-600 hover:underline download-link inline-block transition-colors duration-150">
                             파일명(용량)
                         </a>
-                    </li>
-                </ul>
+                    </div>
+                </th:block>
             </div>
 
             <!-- 삭제 버튼 -->

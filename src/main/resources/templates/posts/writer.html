@@ -157,18 +157,10 @@
 
             if (total > MAX_FILES) {
                 alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
-                setTimeout(() => { resetAll() }, 10);
+                updateInputFiles();
             }
         }
 
-        //완전 초기화를 위한 트릭
-        function resetAll() {
-             fileInput.value = '';
-             fileInput.type = 'text';
-             fileInput.type = 'file';
-             fileList.innerHTML = '';
-             selectedFiles = [];
-        }
 
         /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
 
@@ -247,18 +239,14 @@
                 })
             });
 
-            //디버깅
-            console.log("tempKey : " + tempKey);
-            console.log(storedNames);
-
-            //전송 이전에 빈 file 인퓻 제거
-            document.querySelectorAll("input[type='file']").forEach(input => {
-                if (input.files.length === 0) {
-                    input.remove();
+            //5. 첨부파일을 아무것도 안한 상태라면
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                if (!input.value) {
+                    input.remove(); // 아무 파일도 선택 안 한 경우 제거
                 }
             });
 
-            //5. 모든 작업 완료 후 폼 제출
+            //6. 모든 작업 완료 후 폼 제출
             document.getElementById("postForm").submit();
 
         } // submitPost() 함수 종료

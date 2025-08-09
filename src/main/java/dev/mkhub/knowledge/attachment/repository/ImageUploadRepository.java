@@ -37,12 +37,12 @@ public interface ImageUploadRepository extends JpaRepository<Attachment, Long> {
     void deleteByTempKeyAndStoredNamesByTempKey(@Param("tempKey") String tempKey,
                                        @Param("fileNames") List<String> fileNames);
 
-    //같은 postId 에서 에디터에 남아있는 file_name을 제외한 attachement를 조회 (postId 로 조회)
-    @Query("SELECT a FROM Attachment a WHERE a.post.id = :postId AND a.fileName NOT IN :fileNames")
+    //같은 postId 에서 에디터에 남아있는 file_name을 제외한 attachement를 조회 (postId와 uplpadType가 EDITOR_IMAGE인것을 로 조회)
+    @Query("SELECT a FROM Attachment a WHERE a.post.id = :postId AND a.fileName NOT IN :fileNames AND a.uploadType = 'EDITOR_IMAGE'")
     List<Attachment> findUnusedImagesByPostId(@Param("postId") Long postId, @Param("fileNames") List<String> fileNames);
 
     @Modifying
-    @Query("DELETE FROM Attachment a WHERE a.post.id = :postId AND a.fileName IN :fileNames")
+    @Query("DELETE FROM Attachment a WHERE a.post.id = :postId AND a.fileName IN :fileNames AND a.uploadType = 'EDITOR_IMAGE'")
     void deleteByTempKeyAndStoredNamesByPostId(@Param("postId") Long postId,
                                        @Param("fileNames") List<String> fileNames);
 

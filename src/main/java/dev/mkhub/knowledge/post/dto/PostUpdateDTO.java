@@ -2,8 +2,10 @@ package dev.mkhub.knowledge.post.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *   기존 Post 수정 요청을 하는 DTO
@@ -31,4 +33,11 @@ public class PostUpdateDTO {
     public LocalDateTime getUpdatedAt() {
         return LocalDateTime.now();
     }
+
+    // 신규로 들어가는 첨부파일
+    List<MultipartFile> attachments;
+
+    //기존 첨부파일 삭제대상 attachment의 id
+    List<Long> deleteIds;
+
 }

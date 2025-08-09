@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +82,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         //첨부파일 저장
-        if(!dto.getAttachments().isEmpty() && dto.getAttachments() != null) {
+        if(dto.getAttachments() != null && !dto.getAttachments().isEmpty()  ) {
             List<FileSaveResultDTO> fileSaveResultDTO= generalFileUtil.saveFiles(dto.getAttachments(), savedPost.getId());
             //fileSaveResultDTO.forEach(fileSaveDTO->log.debug("fileSaveDTO :" , fileSaveDTO.toString()));
 
@@ -117,7 +118,37 @@ public class PostService {
     }
 
 
+    @Transactional
     public int editPost(PostUpdateDTO dto) {
+
+        if(dto.getAttachments() != null && !dto.getAttachments().isEmpty()  ) {
+            List<FileSaveResultDTO> fileSaveResultDTO= generalFileUtil.saveFiles(dto.getAttachments(), dto.getId());
+            //fileSaveResultDTO.forEach(fileSaveDTO->log.debug("fileSaveDTO :" , fileSaveDTO.toString()));
+
+            Post post = postRepository.findById(dto.getId()).orElseThrow(()->new IllegalArgumentException("해당 post가 없음!"));
+
+            List<Attachment> attachments = fileSaveResultDTO.stream()
+                    .map(saveDto -> Attachment.builder()
+                            .post(post)
+                            .fileName(saveDto.getFileName())
+                            .originFileName(saveDto.getOriginFileName())
+                            .fileType(saveDto.getFileType())
+                            .fileSize(saveDto.getSize())
+                            .fileUrl(saveDto.getFileUrl())
+                            .uploadType(saveDto.getUploadType())
+                            .uploadedAt(LocalDateTime.now())
+                            .build())
+                    .toList();
+
+            attachmentRepository.saveAll(attachments);
+        }
+
+        //첨부된 파일중 삭제 대상 첨부 파일 삭제
+        if( dto.getDeleteIds() != null && !dto.getDeleteIds().isEmpty()) {
+            attachmentRepository.deleteAllByIdInBatch(dto.getDeleteIds());
+        }
+
+
 
       return  postRepository.updatePostById(dto);
     }

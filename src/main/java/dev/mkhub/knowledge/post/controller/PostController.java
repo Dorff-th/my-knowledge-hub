@@ -180,6 +180,19 @@ public class PostController {
         return "posts/editor";
     }
 
+    @PostMapping("/{id}/temp/edit")
+    public void editPostTemp(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostUpdateDTO dto) {
+
+        log.debug("===new attachments ");
+        log.debug("신규추가 file 개수  " + dto.getAttachments().size());
+        dto.getAttachments().forEach(att->log.debug("new add file : " + att.getOriginalFilename() + ", " + att.getSize()));
+
+        //삭제대상 attachment id 확인
+        log.debug("\n===delete for dto.getDeleteIds");
+        log.debug("delete file 개수  " + dto.getDeleteIds().size());
+        dto.getDeleteIds().forEach(id->{log.debug("id :" + id);});
+    }
+
     //Post 수정 처리
     @PostMapping("/{id}/edit")
     public String editPost(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostUpdateDTO dto) {
