@@ -123,7 +123,7 @@ public class PostController {
     public String showWriter(Model model) {
         List<Category> categories = categoryService.findAllCategory();
         model.addAttribute("categories", categories);
-        return "posts/writer";
+        return "posts/writer_proto";
     }
 
 

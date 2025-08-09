@@ -62,9 +62,9 @@
 <main class="container" layout:fragment="body">
     <!-- 본문 내용이 여기에 삽입됨 -->
 </main>
-<script type="module" th:inline="javascript">
-    import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
-    import { showSuccessToast, showErrorToast } from /*[[@{/js/toast.js}]]*/ '';
+    <script type="module" th:inline="javascript">
+        import { showLoading, hideLoading } from /*[[@{/js/loading.js}]]*/ '';
+        import { showSuccessToast, showErrorToast } from /*[[@{/js/toast.js}]]*/ '';
 
     document.addEventListener("DOMContentLoaded", () => {
         // 폼 전송 로딩

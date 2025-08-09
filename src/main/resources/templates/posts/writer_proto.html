@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{${#authorization.expression('isAuthenticated()')} ?
+                          'layouts/layout-main' :
+                          'layouts/layout-public'}">
+<body>
+<main layout:fragment="body">
+    <div class="max-w-3xl mx-auto py-10">
+        <!-- 카드 -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+
+            <!-- 제목 -->
+            <h2 class="text-2xl font-bold mb-6">📝 새 글 작성</h2>
+
+            <!-- 글쓰기 폼 -->
+            <form th:action="@{/posts/write}" method="post" id="postForm"  enctype="multipart/form-data">
+                <!-- tempKey hidden 필드 -->
+                <input type="hidden" name="tempKey" id="tempKey" />
+                <div class="mb-4">
+                    <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-2">📂 카테고리 선택</label>
+                    <select id="categoryId" name="categoryId"
+                            class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 제목 입력 -->
+                <label class="block mb-2 text-sm font-medium text-gray-700">제목</label>
+                <input type="text" name="title" placeholder="제목을 입력하세요"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring focus:ring-blue-200"
+                       required>
+
+                <!-- Toast UI Editor 영역 -->
+                <label class="block mb-2 text-sm font-medium text-gray-700">내용</label>
+                <div id="editor" class="mb-4"></div>
+                <textarea id="content" name="content" hidden></textarea>
+
+                <!-- 첨부파일 영역  start -->
+                <div class="space-y-4">
+                    <label class="block">
+                        <span class="text-gray-700 font-semibold">첨부파일</span>
+                        <input type="file" name="attachments" id="fileInput" multiple
+                               class="mt-2 block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100">
+                    </label>
+                    <!-- 선택한 파일 목록 -->
+                    <ul id="fileList" class="space-y-2"></ul>
+                </div>
+
+                <!--첨부파일 영역 end -->
+
+                <div class="mt-6">
+                    <a href="/posts"
+                       class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-4 rounded-full text-sm transition duration-150">
+                        ← 목록으로
+                    </a>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button type="button"  id="btnSave"
+                            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                        작성 완료
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</main>
+<div layout:fragment="page-script">
+    <script type="module" th:src="@{/js/posts/writer.js(v=${appVersion})}"></script>
+</div>
+</body>
+</html>
