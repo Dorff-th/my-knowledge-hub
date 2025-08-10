@@ -3,6 +3,8 @@ package dev.mkhub.knowledge.post.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dev.mkhub.knowledge.attachment.domain.QAttachment;
+import dev.mkhub.knowledge.attachment.enums.UploadType;
 import dev.mkhub.knowledge.member.domain.QMember;
 import dev.mkhub.knowledge.post.domain.QCategory;
 import dev.mkhub.knowledge.post.domain.QComment;
@@ -35,6 +37,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         QMember member = QMember.member;
         QCategory category = QCategory.category;
         QComment comment = QComment.comment;
+        QAttachment attachment = QAttachment.attachment;
 
         BooleanBuilder builder = createSearchBuilder.createSearchBuilder(condition);
 
@@ -47,12 +50,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         member.username,
                         member.id,
                         comment.count(),
-                        member.nickname
+                        member.nickname,
+                        attachment.count()
                 ))
                 .from(post)
                 .leftJoin(post.category, category)
                 .leftJoin(post.member, member)
                 .leftJoin(comment).on(comment.post.eq(post))
+                .leftJoin(attachment)
+                .on(attachment.post.id.eq(post.id)
+                        .and(attachment.uploadType.eq(UploadType.ATTACHMENT))) // ✅ ON 절 조건
                 .where(builder)
                 .groupBy(post.id, post.title, post.createdAt, category.name, member.username, member.id) // ✅ group by로 중복 제거
                 .orderBy(post.id.desc())

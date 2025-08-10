@@ -32,8 +32,12 @@
             게시글 제목
             </h3>
             <span th:if="${post.commentCount > 0}">
-                💬 <span th:text="${post.commentCount}"></span>
+                💬  댓글 (<span th:text="${post.commentCount}"></span>)
             </span>
+            <span th:if="${post.attachmentCount > 0}">
+                💾 첨부(<span th:text="${post.attachmentCount}"></span>)
+            </span>
+
             <p class="text-sm text-gray-500">
                 <span th:text="${post.categoryName}">Category</span>
                 <span class="mx-1">·</span>
