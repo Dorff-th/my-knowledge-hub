@@ -31,6 +31,14 @@
                 </p>-->
             </div>
 
+            <!-- 태그 표충  영역 -->
+            <div class="mt-4 flex flex-wrap gap-2">
+                <span th:each="tag : ${post.tags}"
+                      class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 cursor-pointer">
+                     <a th:href="@{'/posts/tags/' + ${tag}}" th:text="${'#' + tag}"></a>
+                </span>
+            </div>
+
             <!-- 첨부파일 표출 영역 -->
 
             <div id="attachment-list" class="space-y-2">

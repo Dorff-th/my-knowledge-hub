@@ -19,6 +19,10 @@ import dev.mkhub.knowledge.common.dto.PageResponseDTO;
 import dev.mkhub.knowledge.post.repository.CategoryRepository;
 import dev.mkhub.knowledge.post.repository.PostRepository;
 import dev.mkhub.knowledge.post.repository.PostRepositoryCustom;
+import dev.mkhub.knowledge.tag.domain.PostTag;
+import dev.mkhub.knowledge.tag.domain.Tag;
+import dev.mkhub.knowledge.tag.repository.PostTagRepository;
+import dev.mkhub.knowledge.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,6 +52,9 @@ public class PostService {
 
     private final GeneralFileUtil generalFileUtil;
     private final AttachmentRepository attachmentRepository;
+
+    private final TagService tagService;
+    private final PostTagRepository postTagRepository;
 
     //post 페이징(목록)
     public PageResponseDTO<PostDTO> getPostList(PostSearchCondition postSearchCondition, PageRequestDTO requestDTO) {
@@ -109,6 +116,16 @@ public class PostService {
             imageUploadRepository.updatePostIdByTempKey(savedPost.getId(), tempKey);
         }
 
+        //태그 & post_tag 관계 저장
+        if (dto.getTags() != null) {
+            String[] tagArray = dto.getTags().split(",");
+            for (String tagName : tagArray) {
+                                Tag tag = tagService.getOrCreateTag(tagName);
+                PostTag postTag = new PostTag(savedPost, tag);
+                postTagRepository.save(postTag);
+            }
+        }
+
         return savedPost;
     }
 
@@ -158,5 +175,10 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
+    }
+
+    //클릭한 태그의 목록만 나오게
+    public List<PostDTO> getPostsByTag(String tagName) {
+        return postRepositoryCustom.findPostsByTagName(tagName);
     }
 }

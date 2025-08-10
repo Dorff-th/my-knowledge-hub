@@ -31,4 +31,7 @@ public class PostRequestDTO {
 
     //첨부파일
     List<MultipartFile> attachments;
+
+    //Tags
+    private String tags; // hidden input "tags"
 }

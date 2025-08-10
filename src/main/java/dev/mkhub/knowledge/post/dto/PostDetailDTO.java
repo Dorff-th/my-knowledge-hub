@@ -1,8 +1,11 @@
 package dev.mkhub.knowledge.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 /*
 Post 상세내용을 반환하는 DTO
@@ -24,5 +27,34 @@ public class PostDetailDTO {
     private String username;
     private Long categoryId;
     private String nickname;
-    //private Long commentCount; <-- Post 상세 내용은 댓글 개수는 CommentDTO에서 포함예정
+
+    @JsonIgnore
+    private String tagsRaw; // group_concat 결과 저장
+
+    private List<String> tags;
+
+    public void setTagsFromRaw() {
+        if (tagsRaw != null && !tagsRaw.isEmpty()) {
+            tags = Arrays.asList(tagsRaw.split(","));
+        } else {
+            tags = List.of();
+        }
+    }
+
+    public PostDetailDTO(Long id, String title, String content, LocalDateTime createdAt,
+                         LocalDateTime updatedAt, String categoryName, Long memberId,
+                         String username, Long categoryId, String nickname, String tagsRaw) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.categoryName = categoryName;
+        this.memberId = memberId;
+        this.username = username;
+        this.categoryId = categoryId;
+        this.nickname = nickname;
+        this.tagsRaw = tagsRaw;
+        setTagsFromRaw();
+    }
 }

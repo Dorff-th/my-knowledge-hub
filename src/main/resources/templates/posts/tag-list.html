@@ -1,0 +1,49 @@
+<!-- 태그별 글 목록 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'#' + ${tagName} + ' 태그 글 목록'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <!-- 페이지 제목 -->
+    <h1 class="text-2xl font-bold mb-6">
+        <span class="text-indigo-600" th:text="'#' + ${tagName}"></span>
+        <span class="text-gray-700">태그 글 목록</span>
+    </h1>
+
+    <!-- 글 목록 -->
+    <div th:if="${#lists.isEmpty(posts)}" class="text-gray-500">
+        해당 태그에 해당하는 글이 없습니다.
+    </div>
+
+    <ul th:if="${!#lists.isEmpty(posts)}" class="space-y-4">
+        <li th:each="post : ${posts}"
+            class="bg-white shadow-sm rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+
+            <!-- 제목 -->
+            <a th:href="@{'/posts/' + ${post.id}}"
+               class="text-lg font-semibold text-indigo-600 hover:underline"
+               th:text="${post.title}"></a>
+
+            <!-- 작성일 -->
+            <div class="text-sm text-gray-500 mt-1"
+                 th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+
+            <!-- (선택) 간단한 내용 요약 -->
+            <p class="text-gray-700 mt-2 line-clamp-2"
+            <span th:text="${post.nickname}"></span></p>
+        </li>
+    </ul>
+
+    <!-- 뒤로가기 -->
+    <div class="mt-8">
+        <a href="/" class="text-sm text-gray-500 hover:text-gray-700">&larr; 홈으로</a>
+    </div>
+</div>
+
+</body>
+</html>

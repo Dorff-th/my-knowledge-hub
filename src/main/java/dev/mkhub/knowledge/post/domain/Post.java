@@ -2,12 +2,14 @@ package dev.mkhub.knowledge.post.domain;
 
 import dev.mkhub.knowledge.attachment.domain.Attachment;
 import dev.mkhub.knowledge.member.domain.Member;
+import dev.mkhub.knowledge.tag.domain.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,6 +52,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments;
+
+
 
     public Post(String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt, Member member, Category category) {
         this.title = title;

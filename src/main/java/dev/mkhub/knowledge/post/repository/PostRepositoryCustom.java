@@ -6,6 +6,7 @@ import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepositoryCustom {
@@ -15,5 +16,7 @@ public interface PostRepositoryCustom {
 
     // Post 상세 내용 조회 메서드
     Optional<PostDetailDTO> findById(Long id);
+
+    List<PostDTO> findPostsByTagName(String tagName);
 
 }

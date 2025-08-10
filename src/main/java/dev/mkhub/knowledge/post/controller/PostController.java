@@ -276,4 +276,16 @@ public class PostController {
         return  "redirect:/posts?fromDelete=true";
     }
 
+    /**
+     * 선택한 태그만 나오는 목록
+     *
+     */
+    @GetMapping("/tags/{tagName}")
+    public String getPostsByTag(@PathVariable("tagName") String tagName, Model model) {
+        List<PostDTO> posts = postService.getPostsByTag(tagName);
+        model.addAttribute("tagName", tagName);
+        model.addAttribute("posts", posts);
+        return "posts/tag-list";
+    }
+
 }
