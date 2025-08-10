@@ -44,7 +44,13 @@ public class PostController {
 
     private final AttachmentService attachmentService;
 
-    //게시글 목록
+    /**
+     * 게시글 목록 페이지
+     *
+     * - 설명: 전체 게시글 목록을 조회하여 출력
+     * - URL: /posts
+     * - View: posts/list.html
+     */
     @GetMapping("")
     public String posts( Pageable pageable,
                          PageRequestDTO pageRequestDTO,
@@ -71,7 +77,13 @@ public class PostController {
         return "posts/list";
     }
 
-    //게시글(post) 상세 내용 조회
+    /**
+     * 게시글 상세 페이지
+     *
+     * - 설명: 선택한 게시글의 상세 내용을 출력
+     * - URL: /posts/{id}
+     * - View: posts/detail.html
+     */
     @GetMapping("/{id}")
     public String post(@PathVariable("id") Long id,
                        Model model,
@@ -119,6 +131,13 @@ public class PostController {
         return "redirect:/posts/editor-demo"; // 다시 폼으로
     }
 
+    /**
+     * 신규 게시글 작성 페이지
+     *
+     * - 설명: 사용자가 게시글을 작성할 수 있는 화면
+     * - URL: /posts/write
+     * - View: posts/writer_proto.html (테스트 이후 writer_proto.html -> writer.html로 변경예정)
+     */
     @GetMapping("/write")
     public String showWriter(Model model) {
         List<Category> categories = categoryService.findAllCategory();
@@ -127,6 +146,13 @@ public class PostController {
     }
 
 
+    /**
+     * 신규 게시글 등록 처리
+     *
+     * - 설명: 사용자가 입력한 게시글 데이터를 저장 후 목록 페이지로 리다이렉트
+     * - 요청: PostRequestDTO
+     * - 응답: /posts/{id} (신규 게시글 페이지로 리다이렉트)
+     */
     @PostMapping("/write")
     public String createNewPost(@AuthenticationPrincipal MemberDetails loginUser,
                                 PostRequestDTO dto) {
@@ -139,20 +165,21 @@ public class PostController {
         return "redirect:/posts/" + savedPost.getId() + "?fromSave=true&saveType=created";
     }
 
-    // 기존 post 수정화면
+    /**
+     * 게시글 수정 페이지
+     *
+     * - 설명: 기존 게시글 내용을 수정할 수 있는 화면
+     * - URL: /posts/{id}/edit
+     * - View: posts/editor_proto.html (테스트 이후 editor_poroto.html -> editor.html로 변경예정)
+     */
     @GetMapping("/{id}/edit")
     public String editor(@PathVariable("id") Long id, Model model,
                          @AuthenticationPrincipal MemberDetails loginUser) {
         //기존 Post 내용 조회
         PostDetailDTO post = postService.getPost(id).orElseThrow(()-> new IllegalArgumentException("해당 Post가 없습니다."));
 
-
-
         if(!post.getMemberId().equals(loginUser.getId())) {
-            System.out.println("권한없음");
             throw new AccessDeniedException("권한이 없습니다.");
-        } else {
-            System.out.println("권한있음!");
         }
 
         model.addAttribute("post", post);
@@ -177,7 +204,7 @@ public class PostController {
 
         model.addAttribute("attachments", attachmentViewDTOList);
 
-        return "posts/editor";
+        return "posts/editor_proto";
     }
 
     @PostMapping("/{id}/temp/edit")
@@ -193,6 +220,14 @@ public class PostController {
         dto.getDeleteIds().forEach(id->{log.debug("id :" + id);});
     }
 
+
+    /**
+     * 게시글 수정 처리
+     *
+     * - 설명: 수정 폼에서 전달된 데이터로 기존 게시글 내용을 업데이트 후 상세 페이지로 리다이렉트
+     * - 요청: PostUpdateDTO
+     * - 응답: /posts/{id} (수정된 게시글 상세 페이지)
+     */
     //Post 수정 처리
     @PostMapping("/{id}/edit")
     public String editPost(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostUpdateDTO dto) {
@@ -217,7 +252,13 @@ public class PostController {
     }
 
 
-    //Post 삭제 - 연관관계에 있는 Attachement, Comment 도 함께 삭제
+    /**
+     * 게시글 삭제 처리
+     *
+     * - 설명: 게시글 상세 페이지에서 삭제를하면 목록으로 리다이렉트 
+     * - 요청: id
+     * - 응답: /posts (게시글 목록 페이지)
+     */
     @PostMapping("/{id}/delete")
     public String deletePost(@PathVariable("id") Long id,
                              @AuthenticationPrincipal MemberDetails loginUser) {

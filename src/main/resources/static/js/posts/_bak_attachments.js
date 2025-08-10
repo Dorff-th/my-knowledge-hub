@@ -60,35 +60,4 @@ export function initAttachments(fileInputSelector, fileListSelector, maxFiles = 
     files.forEach(file => dt.items.add(file));
     inputEl.files = dt.files;
   }
-
-} // initAttachments export end
-
- /**
-   삭제 토글 이벤트 (수정화면에서 사용)
-   - toggleEl :  화면에서 삭제버튼 class
-   - dataAttachId : [data-attach-id]
-   - deleteIds : 화면에서 hidden 처리된 삭제 대상의 attachId값
-  */
- export function deleteToggle(toggleEl, dataAttachId, deleteIds) {
-
-    const deleteSet = new Set();
-
-    document.querySelectorAll(toggleEl).forEach(btn => {
-          btn.addEventListener('click', e => {
-              const item = e.target.closest(dataAttachId);
-              const id = item.dataset.attachId;
-
-              if (item.classList.toggle('marked-delete')) {
-                        item.classList.add('opacity-50');
-                        deleteSet.add(id);
-                        e.target.textContent = '삭제취소';
-              } else {
-                        item.classList.remove('opacity-50');
-                        deleteSet.delete(id);
-                        e.target.textContent = '삭제';
-              }
-              document.querySelector(deleteIds).value = Array.from(deleteSet).join(',');
-          });
-    });
-
-  }
+}
