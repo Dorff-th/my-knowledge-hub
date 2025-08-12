@@ -41,6 +41,78 @@
                 <div id="editor" class="mb-4"></div>
                 <textarea id="content" name="content" hidden></textarea>
 
+                <!-- ## 태그 영역 start ## -->
+                <!-- 📌 태그 입력/칩/자동완성 전체 래퍼 -->
+                <section id="tagSection" class="mt-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">태그!!!</h3>
+
+                    <!-- 입력 라인 -->
+                    <div class="relative">
+                        <div class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                            <!-- 칩 컨테이너: 선택된 태그가 여기에 붙음 -->
+                            <ul id="tagChipList"
+                                class="flex flex-wrap gap-2"
+                                aria-live="polite"
+                                aria-relevant="additions removals">
+                                <!-- 예시 칩 (초기값이 있을 경우 서버에서 렌더링) -->
+
+                                <li class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs flex items-center gap-1" th:each="tag : ${postTags}">
+                                  <span th:text="${'#' + tag.name}">#tag</span>
+                                  <button type="button"
+                                          class="inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200 tag-chip"
+                                          aria-label="태그 spring 삭제"
+                                          data-role="remove-chip"
+                                          data-tag="spring"
+                                          th:data-tag-id="${tag.postTag.tag.id}"
+                                          th:data-tag-name="${tag.name}">×</button>
+                                </li>
+
+                            </ul>
+
+                            <!-- 실제 입력창 -->
+                            <input id="tagInput"
+                                   type="text"
+                                   class="flex-1 outline-none text-sm placeholder-gray-400"
+                                   placeholder="태그 입력 후 Enter 또는 , (최대 5개)"
+                                   autocomplete="off"
+                                   aria-autocomplete="list"
+                                   aria-expanded="false"
+                                   aria-controls="tagSuggestListbox"
+                                   data-role="tag-input">
+                        </div>
+
+                        <!-- 자동완성 리스트박스(숨김 기본) -->
+                        <div id="tagSuggestPanel"
+                             class="absolute left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg max-h-56 overflow-auto hidden"
+                             role="listbox"
+                             aria-label="태그 자동완성"
+                             data-role="suggest-panel">
+                            <ul id="tagSuggestListbox">
+                                <!-- 예시 아이템
+                                <li role="option"
+                                    tabindex="-1"
+                                    class="px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                                    data-tag="spring">spring</li>
+                                -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 힌트/도움말 -->
+                    <p class="mt-2 text-xs text-gray-500">
+                        엔터 또는 콤마(,)로 태그를 추가하세요. 공백/대소문자는 자동 정리됩니다.
+                    </p>
+
+                    <!-- 서버로 보낼 숨김 필드 (comma-join 방식) -->
+                    <input type="hidden" id="tagsHidden" name="tags"
+                           value="" data-role="tags-hidden">
+
+                    <!--서버로 보낼 삭제 대상 태그 id 숨긴 필드 : -->
+                    <input type="hidden" id="deleteTagIds" name="deleteTagIds">
+
+                </section>
+                <!-- ## 태그 영역 end ## -->
+
                 <!-- 기존 첨부파일 영역  start -->
                 <div id="attachment-list" class="space-y-2">
                     <th:block th:each="attach : ${attachments}">
@@ -95,6 +167,15 @@
 </main>
 <div layout:fragment="page-script">
     <script type="module" th:src="@{/js/posts/editor.js(v=${appVersion})}"></script>
+
+    <script type="module" th:src="@{/js/tags/tags.state.js}"></script>
+    <script type="module" th:src="@{/js/tags/tags.api.js}"></script>
+    <script type="module" th:src="@{/js/tags/tags.ui.js}"></script>
+
+    <script type="module" th:src="@{/js/posts/editor.tags.js}"></script>
+
+
 </div>
 </body>
 </html>
+

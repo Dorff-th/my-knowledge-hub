@@ -17,30 +17,48 @@ export function getTags() {
 }
 
 export function setTags(arr = []) {
-  const unique = [];
-  arr.forEach(t => {
-    const n = normalize(t);
-    if (n && !unique.includes(n)) unique.push(n);
-  });
-  STATE.list = unique.slice(0, STATE.max);
+  STATE.list = arr;
 }
 
 export function addTag(raw) {
-  const tag = normalize(raw);
-  if (!tag) return { ok: false, reason: 'invalid' };
-  if (STATE.list.includes(tag)) return { ok: false, reason: 'duplicate' };
-  if (STATE.list.length >= STATE.max) return { ok: false, reason: 'max' };
-  STATE.list.push(tag);
-  return { ok: true, tag };
+  const tagName = normalize(raw);
+  if (!tagName) return { ok: false, reason: 'invalid' };
+
+  // 중복 체크: tagName 속성 기준
+  if (STATE.list.some(item => item.tagName === tagName)) {
+    return { ok: false, reason: 'duplicate' };
+  }
+
+  if (STATE.list.length >= STATE.max) {
+    return { ok: false, reason: 'max' };
+  }
+
+  // 새 태그 객체 추가
+  const newTag = { tagName, dataId: null };
+  STATE.list.push(newTag);
+
+  return { ok: true, tag: newTag };
 }
 
 export function removeTag(tag) {
-  const idx = STATE.list.indexOf(tag);
+
+  const dataId = tag.dataId;
+  console.log(dataId);
+
+  if (dataId !== null) {
+      const deleteInput = document.getElementById('deleteTagIds'); // hidden input
+      const current = deleteInput.value ? deleteInput.value.split(',') : [];
+      current.push(dataId);
+      deleteInput.value = current.join(',');
+ }
+
+  const idx = STATE.list.indexOf(tag);      // tag로 받아야 Stat.list에서 제거가 되는듯
   if (idx >= 0) STATE.list.splice(idx, 1);
 }
 
 export function joinForSubmit() {
-  return STATE.list.join(',');
+  //return STATE.list.join(',');
+  return STATE.list.map(tag => tag.tagName).join(',');
 }
 
 // === helpers ===

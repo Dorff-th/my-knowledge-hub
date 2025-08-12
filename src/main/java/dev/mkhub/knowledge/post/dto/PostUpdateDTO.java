@@ -40,4 +40,8 @@ public class PostUpdateDTO {
     //기존 첨부파일 삭제대상 attachment의 id
     List<Long> deleteIds;
 
+    private String tags; // hidden input "tags"  (신규 입력 tag 들)
+    
+    private String deleteTagIds;  // 삭제 대상 tag id 들
+
 }

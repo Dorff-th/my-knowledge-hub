@@ -99,14 +99,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         member.id,
                         member.username,
                         category.id,
-                        member.nickname,
-                        Expressions.stringTemplate("GROUP_CONCAT({0})", tag.name)
+                        member.nickname
                 ))
                 .from(post)
                 .leftJoin(post.category, category)
                 .leftJoin(post.member, member)
-                .leftJoin(postTag).on(post.id.eq(postTag.post.id))
-                .leftJoin(tag).on(postTag.tag.id.eq(tag.id))
                 .where(post.id.eq(postId))
                 .groupBy(post.id)
                 .fetchOne();

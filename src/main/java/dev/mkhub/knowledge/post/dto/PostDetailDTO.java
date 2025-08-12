@@ -11,7 +11,7 @@ import java.util.List;
 Post 상세내용을 반환하는 DTO
  */
 
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Builder
 @Data
@@ -28,22 +28,11 @@ public class PostDetailDTO {
     private Long categoryId;
     private String nickname;
 
-    @JsonIgnore
-    private String tagsRaw; // group_concat 결과 저장
 
-    private List<String> tags;
-
-    public void setTagsFromRaw() {
-        if (tagsRaw != null && !tagsRaw.isEmpty()) {
-            tags = Arrays.asList(tagsRaw.split(","));
-        } else {
-            tags = List.of();
-        }
-    }
 
     public PostDetailDTO(Long id, String title, String content, LocalDateTime createdAt,
                          LocalDateTime updatedAt, String categoryName, Long memberId,
-                         String username, Long categoryId, String nickname, String tagsRaw) {
+                         String username, Long categoryId, String nickname) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -54,7 +43,6 @@ public class PostDetailDTO {
         this.username = username;
         this.categoryId = categoryId;
         this.nickname = nickname;
-        this.tagsRaw = tagsRaw;
-        setTagsFromRaw();
+
     }
 }

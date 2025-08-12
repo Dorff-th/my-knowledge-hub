@@ -26,16 +26,13 @@
         <div class="bg-white shadow-md rounded-lg p-6">
             <div class="prose prose-lg prose-gray max-w-none">
                 <div id="viewer"></div>
-                <!--<p th:text="${post.content}">
-                    Dependency injection (DI) is a design pattern to assist pattern provisioning lead in script benefits.
-                </p>-->
             </div>
 
-            <!-- 태그 표충  영역 -->
+            <!-- 태그 표출  영역 -->
             <div class="mt-4 flex flex-wrap gap-2">
-                <span th:each="tag : ${post.tags}"
+                <span th:each="tag : ${postTags}"
                       class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 cursor-pointer">
-                     <a th:href="@{'/posts/tags/' + ${tag}}" th:text="${'#' + tag}"></a>
+                     <a th:href="@{'/posts/tags/' + ${tag.name}}" th:text="${'#' + tag.name}"></a>
                 </span>
             </div>
 

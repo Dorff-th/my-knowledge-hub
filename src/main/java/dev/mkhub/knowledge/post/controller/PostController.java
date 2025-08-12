@@ -16,6 +16,9 @@ import dev.mkhub.knowledge.post.dto.PostUpdateDTO;
 import dev.mkhub.knowledge.post.dto.search.PostSearchCondition;
 import dev.mkhub.knowledge.post.service.CategoryService;
 import dev.mkhub.knowledge.post.service.PostService;
+import dev.mkhub.knowledge.tag.domain.PostTag;
+import dev.mkhub.knowledge.tag.dto.TagDTO;
+import dev.mkhub.knowledge.tag.service.PostTagService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +48,8 @@ public class PostController {
     private final CategoryService categoryService;
 
     private final AttachmentService attachmentService;
+
+    private final PostTagService postTagService;
 
     /**
      * 게시글 목록 페이지
@@ -113,30 +120,20 @@ public class PostController {
 
         model.addAttribute("attachments", attachmentViewDTOList);
 
+        List<TagDTO> postTags= postTagService.getByPostId(id);
+        model.addAttribute("postTags", postTags);
+
         return "posts/detail";
     }
 
-    //editor-demo
-    @GetMapping("/editor-demo")
-    public String showEditorDemo() {
-        return "posts/editor-demo"; // templates/post/editor-demo.html
-    }
 
-    @PostMapping("/editor-demo")
-    public String handleEditorSubmit(@RequestParam String title,
-                                     @RequestParam String content) {
-        System.out.println("제목: " + title);
-        System.out.println("내용: " + content); // 마크다운 텍스트
-
-        return "redirect:/posts/editor-demo"; // 다시 폼으로
-    }
 
     /**
      * 신규 게시글 작성 페이지
      *
      * - 설명: 사용자가 게시글을 작성할 수 있는 화면
      * - URL: /posts/write
-     * - View: posts/writer_proto.html (테스트 이후 writer_proto.html -> writer.html로 변경예정)
+     * - View: posts/z_writer_proto.html (테스트 이후 z_writer_proto.html -> writer.html로 변경예정)
      */
     @GetMapping("/write")
     public String showWriter(Model model) {
@@ -170,7 +167,7 @@ public class PostController {
      *
      * - 설명: 기존 게시글 내용을 수정할 수 있는 화면
      * - URL: /posts/{id}/edit
-     * - View: posts/editor_proto.html (테스트 이후 editor_poroto.html -> editor.html로 변경예정)
+     * - View: posts/z_editor_proto.html (테스트 이후 editor_poroto.html -> editor.html로 변경예정)
      */
     @GetMapping("/{id}/edit")
     public String editor(@PathVariable("id") Long id, Model model,
@@ -204,20 +201,40 @@ public class PostController {
 
         model.addAttribute("attachments", attachmentViewDTOList);
 
+        //PostTag 조회하여 view에 전달
+        List<TagDTO> postTags= postTagService.getByPostId(id);
+        model.addAttribute("postTags", postTags);
+
+
         return "posts/editor_proto";
     }
 
     @PostMapping("/{id}/temp/edit")
     public void editPostTemp(@AuthenticationPrincipal MemberDetails loginUser, @ModelAttribute PostUpdateDTO dto) {
 
-        log.debug("===new attachments ");
+        /*log.debug("===new attachments ");
         log.debug("신규추가 file 개수  " + dto.getAttachments().size());
         dto.getAttachments().forEach(att->log.debug("new add file : " + att.getOriginalFilename() + ", " + att.getSize()));
 
         //삭제대상 attachment id 확인
         log.debug("\n===delete for dto.getDeleteIds");
         log.debug("delete file 개수  " + dto.getDeleteIds().size());
-        dto.getDeleteIds().forEach(id->{log.debug("id :" + id);});
+        dto.getDeleteIds().forEach(id->{log.debug("id :" + id);});*/
+
+        log.debug("====\n\n\n 신규입력된 tags : " + dto.getTags());
+        log.debug("====\n  삭제예정 tag ids : " + dto.getDeleteTagIds());
+
+        String delTagIdsStr = dto.getDeleteTagIds();
+
+        //List<Long> 타입으로 변환
+        List<Long> result = (delTagIdsStr == null || delTagIdsStr.isBlank())
+                ? Collections.emptyList()
+                : Arrays.stream(delTagIdsStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::parseLong)
+                .toList();
+
     }
 
 

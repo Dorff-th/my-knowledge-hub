@@ -24,6 +24,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/posts", "/posts/**", "/api/**", "/search/**").permitAll() // ✅ 공개
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/download/**").permitAll()
+                        .requestMatchers("/zdemo/**").permitAll()                   //테스트
+                        .requestMatchers("/zdemo/**", "/zdemo_js/**").permitAll()   //테스트
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

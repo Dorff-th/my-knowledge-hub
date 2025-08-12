@@ -5,6 +5,7 @@ import dev.mkhub.knowledge.attachment.dto.FileSaveResultDTO;
 import dev.mkhub.knowledge.attachment.repository.AttachmentRepository;
 import dev.mkhub.knowledge.attachment.repository.ImageUploadRepository;
 import dev.mkhub.knowledge.attachment.util.GeneralFileUtil;
+import dev.mkhub.knowledge.common.util.StringUtils;
 import dev.mkhub.knowledge.post.domain.Category;
 import dev.mkhub.knowledge.member.domain.Member;
 import dev.mkhub.knowledge.post.domain.Post;
@@ -138,11 +139,12 @@ public class PostService {
     @Transactional
     public int editPost(PostUpdateDTO dto) {
 
+        Post post = postRepository.findById(dto.getId()).orElseThrow(()->new IllegalArgumentException("해당 post가 없음!"));
         if(dto.getAttachments() != null && !dto.getAttachments().isEmpty()  ) {
             List<FileSaveResultDTO> fileSaveResultDTO= generalFileUtil.saveFiles(dto.getAttachments(), dto.getId());
             //fileSaveResultDTO.forEach(fileSaveDTO->log.debug("fileSaveDTO :" , fileSaveDTO.toString()));
 
-            Post post = postRepository.findById(dto.getId()).orElseThrow(()->new IllegalArgumentException("해당 post가 없음!"));
+            //Post post = postRepository.findById(dto.getId()).orElseThrow(()->new IllegalArgumentException("해당 post가 없음!"));
 
             List<Attachment> attachments = fileSaveResultDTO.stream()
                     .map(saveDto -> Attachment.builder()
@@ -163,6 +165,22 @@ public class PostService {
         //첨부된 파일중 삭제 대상 첨부 파일 삭제
         if( dto.getDeleteIds() != null && !dto.getDeleteIds().isEmpty()) {
             attachmentRepository.deleteAllByIdInBatch(dto.getDeleteIds());
+        }
+
+        //삭제 대상 tag id들을 List<Long> 타입으로 변환후 삭제 쿼리 실행
+        List<Long> deleteTagIds = StringUtils.toLongList(dto.getDeleteTagIds());
+        if(deleteTagIds != null && !deleteTagIds.isEmpty()) {
+            postTagRepository.deleteByPostIdAndTagIdIn(post.getId(), deleteTagIds);
+        }
+
+        //태그 & post_tag 관계 저장
+        if (dto.getTags() != null) {
+            String[] tagArray = dto.getTags().split(",");
+            for (String tagName : tagArray) {
+                Tag tag = tagService.getOrCreateTag(tagName);
+                PostTag postTag = new PostTag(post, tag);
+                postTagRepository.save(postTag);
+            }
         }
 
 

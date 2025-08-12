@@ -5,14 +5,17 @@
 import { getTags, setTags, addTag, removeTag, joinForSubmit, setMaxCount } from './tags.state.js';
 import { fetchSuggest } from './tags.api.js';
 
-export function initTagsUI(opts) {
+export function initTagsUI(opts, tagsArray) {
   const {
     inputEl, chipListEl, suggestPanelEl, suggestListEl, hiddenEl,
     maxCount = 5, initial = []
   } = resolveElements(opts);
 
   setMaxCount(maxCount);
-  setTags(initial);
+  //setTags(initial);
+  // 수정화면에서 기존에 입력된 태그들을 [{tagName:"태그명", dataId:number}, {...}] 형태의 json array 형태로 전달
+  setTags(tagsArray);
+
   renderChips();
   syncHidden();
 
@@ -75,14 +78,16 @@ export function initTagsUI(opts) {
       li.className = 'px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs flex items-center gap-1';
 
       const span = document.createElement('span');
-      span.textContent = `#${tag}`;
+      span.textContent = `#${tag.tagName}`;
 
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200';
-      btn.setAttribute('aria-label', `태그 ${tag} 삭제`);
+      btn.setAttribute('aria-label', `태그 ${tag.tagName} 삭제`);
       btn.dataset.role = 'remove-chip';
-      btn.dataset.tag = tag;
+      btn.dataset.tag = tag.tagName;
+      btn.dataset.tagName = tag.tagName;
+      btn.dataset.tagId = tag.dataId;
       btn.textContent = '×';
       btn.addEventListener('click', () => {
         removeTag(tag);
