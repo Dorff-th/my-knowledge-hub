@@ -133,13 +133,13 @@ public class PostController {
      *
      * - 설명: 사용자가 게시글을 작성할 수 있는 화면
      * - URL: /posts/write
-     * - View: posts/z_writer_proto.html (테스트 이후 z_writer_proto.html -> writer.html로 변경예정)
+     * - View: posts/writer.html
      */
     @GetMapping("/write")
     public String showWriter(Model model) {
         List<Category> categories = categoryService.findAllCategory();
         model.addAttribute("categories", categories);
-        return "posts/writer_proto";
+        return "posts/writer";
     }
 
 
@@ -167,7 +167,7 @@ public class PostController {
      *
      * - 설명: 기존 게시글 내용을 수정할 수 있는 화면
      * - URL: /posts/{id}/edit
-     * - View: posts/z_editor_proto.html (테스트 이후 editor_poroto.html -> editor.html로 변경예정)
+     * - View: posts/editor.html
      */
     @GetMapping("/{id}/edit")
     public String editor(@PathVariable("id") Long id, Model model,
@@ -206,7 +206,7 @@ public class PostController {
         model.addAttribute("postTags", postTags);
 
 
-        return "posts/editor_proto";
+        return "posts/editor";
     }
 
     @PostMapping("/{id}/temp/edit")

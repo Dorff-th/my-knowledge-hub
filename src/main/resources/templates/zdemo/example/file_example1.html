@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>file example 1</title>
+
+</head>
+<body>
+
+
+
+attachment <br/>
+<input type="file" id="fileInput" multiple >
+<div style="padding:10px">
+    업로드 할 첨부파일 정보 표시 (file multiple)
+    <ul id="fileList">
+
+    </ul>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        //DataTransfer를 이용한 첨부파일 정보 표출
+        document.querySelector("#fileInput").addEventListener('change', (e) => {
+            e.preventDefault();
+            const files = e.target.files;
+            const fileList = document.querySelector("#fileList");
+            for(file of files) {
+
+                const li = document.createElement('li');
+                li.textContent = `파일명 : ${file.name}, 파일크기 : ${formatFileSize(file.size)}, 파일타입 : ${file.type}`;
+                fileList.appendChild(li);
+            }
+
+        });
+    });
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+        }
+    }
+</script>
+</body>
+</html>

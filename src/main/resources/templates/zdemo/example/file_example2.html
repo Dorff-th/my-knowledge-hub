@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>file example 2 - 개인 테스트용</title>
+
+</head>
+<body>
+
+
+
+attachment <br/>
+
+<form>
+    <input type="file" id="fileInput" multiple >
+</form>
+
+
+
+
+<div style="padding:10px">
+    업로드 할 첨부파일 정보 표시 (file multiple)
+    <ul id="fileList">
+
+    </ul>
+
+</div>
+
+<script>
+
+    let selectedFiles = [];     // 파일을 선택하면 이 배열에 저장
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector("#fileInput").addEventListener("change", (e) => {
+
+            const files = e.target.files; // 새로 선택한 파일 (3개를 선택하면 3개, 1개를 선택하면 1개 )
+            selectedFiles = selectedFiles.concat([...files]);  // (예 처음에 3개를 선택하고 또 1개를 선택하면 4개가 된다. 즉 새로 선택한 파일들이 합쳐지는 구조)
+
+            console.log('files', files);
+            console.log('selectedFiles', selectedFiles);
+
+            // .. 여기까지는 file input에 지금 선택된것만 반영이 되고 selectedFiles는 반영이 되지 않는다.
+
+
+            // 아래 코드를 추가해야 연속적으로 선택한 파일이 file input에 갱신이 된다.
+            const dt = new DataTransfer();
+            selectedFiles.forEach(file => dt.items.add(file));
+            document.querySelector("#fileInput").files = dt.files;
+
+
+        });
+    });
+
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+        }
+    }
+</script>
+</body>
+</html>

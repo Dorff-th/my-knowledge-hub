@@ -39,6 +39,76 @@
                 <div id="editor" class="mb-4"></div>
                 <textarea id="content" name="content" hidden></textarea>
 
+
+                <!-- ## 태그 영역 start ## -->
+                <!-- 📌 태그 입력/칩/자동완성 전체 래퍼 -->
+                <section id="tagSection" class="mt-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">태그</h3>
+
+                    <!-- 입력 라인 -->
+                    <div class="relative">
+                        <div class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                            <!-- 칩 컨테이너: 선택된 태그가 여기에 붙음 -->
+                            <ul id="tagChipList"
+                                class="flex flex-wrap gap-2"
+                                aria-live="polite"
+                                aria-relevant="additions removals">
+                                <!-- 예시 칩 (초기값이 있을 경우 서버에서 렌더링)
+                                <li class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs flex items-center gap-1">
+                                  <span>#spring</span>
+                                  <button type="button"
+                                          class="inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-gray-200"
+                                          aria-label="태그 spring 삭제"
+                                          data-role="remove-chip"
+                                          data-tag="spring">×</button>
+                                </li>
+                                -->
+                            </ul>
+
+                            <!-- 실제 입력창 -->
+                            <input id="tagInput"
+                                   type="text"
+                                   class="flex-1 outline-none text-sm placeholder-gray-400"
+                                   placeholder="태그 입력 후 Enter 또는 , (최대 5개)"
+                                   autocomplete="off"
+                                   aria-autocomplete="list"
+                                   aria-expanded="false"
+                                   aria-controls="tagSuggestListbox"
+                                   data-role="tag-input">
+                        </div>
+
+                        <!-- 자동완성 리스트박스(숨김 기본) -->
+                        <div id="tagSuggestPanel"
+                             class="absolute left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg max-h-56 overflow-auto hidden"
+                             role="listbox"
+                             aria-label="태그 자동완성"
+                             data-role="suggest-panel">
+                            <ul id="tagSuggestListbox">
+                                <!-- 예시 아이템
+                                <li role="option"
+                                    tabindex="-1"
+                                    class="px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                                    data-tag="spring">spring</li>
+                                -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 힌트/도움말 -->
+                    <p class="mt-2 text-xs text-gray-500">
+                        엔터 또는 콤마(,)로 태그를 추가하세요. 공백/대소문자는 자동 정리됩니다.
+                    </p>
+
+                    <!-- 서버로 보낼 숨김 필드 (comma-join 방식) -->
+                    <input type="hidden" id="tagsHidden" name="tags"
+                           value="" data-role="tags-hidden">
+                    <!-- 필요시 서버에서 기존 태그를 넣어주기:
+                         th:value="${#strings.arrayJoin(post.tags, ',')}" -->
+
+                </section>
+                <!-- ## 태그 영역 end ## -->
+
+
                 <!-- 첨부파일 영역  start -->
                 <div class="space-y-4">
                     <label class="block">
@@ -65,194 +135,25 @@
                 </div>
 
                 <div class="flex justify-end mt-6">
-                    <button type="button" onclick="submitPost()"
+                    <button type="button"  id="btnSave"
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
                         작성 완료
                     </button>
                 </div>
-            </form>
+
+            </form> <!-- form end -->
 
         </div>
     </div>
 </main>
 <div layout:fragment="page-script">
-    <script th:inline="none">
+    <script type="module" th:src="@{/js/posts/writer.js}"></script>
 
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
+    <script type="module" th:src="@{/js/tags/tags.state.js}"></script>
+    <script type="module" th:src="@{/js/tags/tags.api.js}"></script>
+    <script type="module" th:src="@{/js/tags/tags.ui.js}"></script>
+    <script type="module" th:src="@{/js/posts/writer.tags.js}"></script>
 
-        //최대 첨부 제한 개수
-        const MAX_FILES = 3;
-
-        // 새 파일 업로드 시 개수 체크
-        document.querySelector('#fileInput').addEventListener('change', updateCounter);
-
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-
-        // 현재까지 선택된 파일들을 보관할 배열
-        let selectedFiles = [];
-
-        fileInput.addEventListener('change', () => {
-            // 새로 선택한 파일들을 배열로 변환 후 기존 배열에 추가
-            selectedFiles = [...selectedFiles, ...Array.from(fileInput.files)];
-
-            // 중복 파일 제거 (같은 이름/크기 조합 기준)
-            selectedFiles = selectedFiles.filter(
-                (file, index, self) =>
-                    index === self.findIndex(f => f.name === file.name && f.size === file.size)
-            );
-
-            // input.files 갱신
-            const dt = new DataTransfer();
-            selectedFiles.forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
-
-            renderFileList();
-        });
-
-        function renderFileList() {
-
-            fileList.innerHTML = '';
-
-            selectedFiles.forEach((file, index) => {
-                const li = document.createElement('li');
-                li.className = "flex items-center justify-between bg-gray-50 p-2 rounded border";
-
-                const fileName = document.createElement('span');
-                fileName.textContent = file.name;
-                fileName.className = "text-gray-700 text-sm truncate";
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = '×';
-                removeBtn.className = "text-red-500 font-bold px-2 hover:text-red-700";
-                removeBtn.addEventListener('click', () => removeFile(index));
-
-                li.appendChild(fileName);
-                li.appendChild(removeBtn);
-                fileList.appendChild(li);
-            });
-        }
-
-        // 파일 삭제
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-            updateInputFiles();
-            renderFileList();
-        }
-
-        // FileList를 새로 만들어 input에 반영
-        function updateInputFiles() {
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-
-        function updateCounter() {
-
-            //file Input에서 선택된 파일개수
-            const fileInputCount = document.querySelector('#fileInput').files.length;
-            //file input에서 선택된 파일개수가 아닌 이 표시된 파일 목록(li) 개수
-            const fileListLength = document.querySelectorAll('#fileList li').length;
-            const total = fileInputCount + fileListLength;
-
-            if (total > MAX_FILES) {
-                alert(`최대 ${MAX_FILES}개까지 첨부 가능합니다.`);
-                updateInputFiles();
-            }
-        }
-
-
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  일반 파일 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@  */
-
-
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 START @@@@@@@@@@@@@@@@@@@@@@@@@  */
-
-        // 게시글 작성 중 임시로 첨부된 파일을 식별하기 위한 키 (post_id가 정해지기 전, 첨부파일을 임시로 그룹핑하는 식별자)
-
-        let tempKey = localStorage.getItem("tempPostKey");
-        if (!tempKey) {
-            tempKey = crypto.randomUUID();
-            localStorage.setItem("tempPostKey", tempKey);
-        }
-
-        const formHiddenTempKey = document.getElementById('tempKey');
-        if(!formHiddenTempKey.value) {
-            formHiddenTempKey.value = tempKey;
-        }
-
-        const editor = new toastui.Editor({
-            el: document.querySelector('#editor'),
-            height: '400px',
-            initialEditType: 'markdown',
-            previewStyle: 'vertical',
-            placeholder: '내용을 작성하세요...',
-            hooks: {
-                addImageBlobHook: async (blob, callback) => {
-                    const formData = new FormData();
-                    formData.append('image', blob);             //image
-                    formData.append("mode", "CREATE");            //새로운 post 작성시 첨부되는 임시 이미지라는 뜻 (TEMP -> CREATE 변경)
-                    formData.append("identifier", tempKey);     //새로운 post 작성시 identifier 값은 tempKey(UUID로 생성한 localStorage에 저장되는 값 )
-
-                    const response = await fetch('/api/images/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const result = await response.json();
-                     if (result.success === 1) {
-                        callback(result.url, 'image');
-                    } else {
-                        alert(result.message || "이미지 업로드 실패");
-                    }
-                }
-            }
-        });
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@@@@  에디터 이미지 첨부 컨트롤 영역 END @@@@@@@@@@@@@@@@@@@@@@@@@@  */
-
-        /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 START(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
-        //저장 실행 함수
-        function submitPost() {
-            //1.마크다운 내용 가져와서 content 에 넣기
-            const content = editor.getMarkdown();
-            document.getElementById('content').value = content;
-
-             // 2. 정규표현식으로 이미지 경로 추출 (예: ![](/uploads/images/xxx.png))
-            const imageUrls = Array.from(content.matchAll(/!\[[^\]]*]\((\/uploads\/images\/[^)]+)\)/g))
-                                .map(match => match[1]); // 괄호 안의 경로만 추출
-
-             // 3. 이미지 경로에서 파일명(storedName)만 추출 ( 즉, fileName을 추출)
-            const storedNames = imageUrls.map(url => {
-                const parts = url.split('/');
-                return parts[parts.length - 1]; // 파일명만 추출
-            });
-
-             // 4. 서버에 이미지 정리 요청 보내기
-             fetch("/api/images/temp/cleanup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    tempKey: tempKey,
-                    mode : "CREATE",
-                    storedNames: storedNames
-                })
-            });
-
-            //5. 첨부파일을 아무것도 안한 상태라면
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                if (!input.value) {
-                    input.remove(); // 아무 파일도 선택 안 한 경우 제거
-                }
-            });
-
-            //6. 모든 작업 완료 후 폼 제출
-            document.getElementById("postForm").submit();
-
-        } // submitPost() 함수 종료
-       /*  @@@@@@@@@@@@@@@@@@@@@@@@@  FORM 전송 버튼 영역 END(이미지 cleanup 실행)   @@@@@@@@@@@@@@@@@@@@@@@@@  */
-
-    </script>
 </div>
 </body>
 </html>

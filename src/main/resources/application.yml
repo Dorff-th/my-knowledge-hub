@@ -66,3 +66,7 @@ file:
         base-dir : C:/devtools/zmylong/st_proejct/uploads/images/
         public-url: /uploads/images/
       attachments: C:/devtools/zmylong/st_proejct/uploads/attachments/
+      profile-image:
+        base-dir : C:/devtools/zmylong/st_proejct/uploads/profile_image
+        public-url: /uploads/profile_image/
+

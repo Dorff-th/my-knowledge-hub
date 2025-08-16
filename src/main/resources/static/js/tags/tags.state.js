@@ -4,7 +4,7 @@
 // - validate: 길이, 허용문자
 
 const STATE = {
-  list: [],   // ["spring", "jpa", ...]
+  list: [],
   max: 5
 };
 

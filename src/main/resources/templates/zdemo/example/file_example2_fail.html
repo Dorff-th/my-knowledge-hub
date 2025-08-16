@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>file example 2 - 실패</title>
+
+</head>
+<body>
+
+
+
+attachment <br/>
+<input type="file" id="fileInput" multiple >
+<div style="padding:10px">
+    업로드 할 첨부파일 정보 표시 (file multiple) + 삭제버튼 구현 실패
+    <ul id="fileList">
+
+    </ul>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        renderFileList();
+    });
+
+    function renderFileList() {
+        document.querySelector("#fileInput").addEventListener('change', (e) => {
+            e.preventDefault();
+            const files = e.target.files;
+            const fileList = document.querySelector("#fileList");
+            // e.target.files는 FileList 는 배열이 아닌 객체임. 그래서 스프레드 문법으로 변환하여 forEach 사용가능
+            [...files].forEach((file, index) => {
+
+                const li = document.createElement('li');
+
+                const fileInfo = document.createElement('span');
+                fileInfo.textContent = `파일명 : ${file.name}, 파일크기 : ${formatFileSize(file.size)}` ;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = '삭제';
+                btn.addEventListener('click', (file, index)=>{
+                    removeFileInfo(file, index);
+                });
+
+                li.appendChild(fileInfo);
+                li.appendChild(btn);
+
+                fileList.appendChild(li);
+            });
+
+        });
+    }
+
+    function removeFileInfo(file, index) {
+        // todo : 어떤 코드를 넣어야 함?
+    }
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+        }
+    }
+</script>
+</body>
+</html>

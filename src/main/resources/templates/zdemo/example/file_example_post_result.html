@@ -1,0 +1,15 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>전송결과</h2>
+<ul th:each="attach : ${attachments}">
+    <li th:text="${attach.originalFilename}"></li>
+    <li th:text="${attach.size}"></li>
+</ul>
+</body>
+</html>

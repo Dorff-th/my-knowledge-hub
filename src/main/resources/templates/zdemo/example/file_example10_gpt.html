@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>드래그앤드롭 업로드(drop zone) + 개별 파일 제한(5MB) + 최대 3개 + 총합 20MB + 삭제 버튼(X) (GPT 제공) </title>
+    <style>
+        #dropZone {
+          border: 2px dashed #888;
+          border-radius: 8px;
+          padding: 20px;
+          text-align: center;
+          color: #555;
+          cursor: pointer;
+          margin-bottom: 10px;
+        }
+        #dropZone.dragover {
+          background-color: #eef;
+          border-color: #36f;
+          color: #36f;
+        }
+        #fileList li {
+          margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h3>
+    드래그앤드롭 업로드(drop zone) + 개별 파일 제한(5MB) + 최대 3개 + 총합 20MB + 삭제 버튼(X)
+</h3>
+
+<div id="dropZone">여기로 파일을 드래그하거나 클릭하세요</div>
+<input type="file" id="fileInput" multiple hidden>
+<ul id="fileList"></ul>
+<p id="totalSizeInfo"></p>
+
+<script>
+    const dropZone = document.querySelector('#dropZone');
+    const input    = document.querySelector('#fileInput');
+    const list     = document.querySelector('#fileList');
+    const info     = document.querySelector('#totalSizeInfo');
+
+    const MAX_SIZE  = 5 * 1024 * 1024;   // 5MB
+    const MAX_FILES = 3;
+    const MAX_TOTAL = 20 * 1024 * 1024;  // 20MB
+
+    let dt = new DataTransfer(); // 전역에서 관리 (추가/삭제 모두 반영)
+
+    function handleFiles(files) {
+      let totalSize = [...dt.files].reduce((sum, f) => sum + f.size, 0);
+
+      for (const file of files) {
+        if (dt.files.length >= MAX_FILES) {
+          alert(`파일은 최대 ${MAX_FILES}개까지만 업로드할 수 있습니다.`);
+          break;
+        }
+        if (file.size > MAX_SIZE) {
+          alert(`${file.name} 은(는) ${(file.size/1024/1024).toFixed(2)} MB → 5MB 초과로 제외됨`);
+          continue;
+        }
+        if (totalSize + file.size > MAX_TOTAL) {
+          alert(`총 용량 ${(MAX_TOTAL/1024/1024)}MB를 초과할 수 없습니다.`);
+          continue;
+        }
+
+        dt.items.add(file);
+        totalSize += file.size;
+      }
+
+      input.files = dt.files;
+      renderFileList();
+      updateTotalSize(totalSize);
+    }
+
+    function renderFileList() {
+      list.innerHTML = "";
+      for (const file of dt.files) {
+        const li = document.createElement('li');
+        li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB) `;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = "×";
+        removeBtn.style.marginLeft = "8px";
+
+        removeBtn.addEventListener('click', () => {
+          const newDt = new DataTransfer();
+          for (const f of dt.files) {
+            if (f.name !== file.name) {
+              newDt.items.add(f);
+            }
+          }
+          dt = newDt;
+          input.files = dt.files;
+          renderFileList();
+          updateTotalSize([...dt.files].reduce((sum, f) => sum + f.size, 0));
+        });
+
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+      }
+    }
+
+    function updateTotalSize(size) {
+      info.textContent = `총 업로드 용량: ${(size/1024/1024).toFixed(2)} MB`;
+    }
+
+    // 📌 드래그앤드롭 이벤트
+    dropZone.addEventListener('click', () => input.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    // 📌 일반 파일 선택
+    input.addEventListener('change', () => {
+      handleFiles(input.files);
+    });
+
+</script>
+</body>
+</html>

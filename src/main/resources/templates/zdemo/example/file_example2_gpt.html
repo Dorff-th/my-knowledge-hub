@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>file example 2 - GPT 수정본</title>
+
+</head>
+<body>
+
+
+
+attachment <br/>
+
+<form action="/zdemo/file-example2" method="post" enctype="multipart/form-data">
+    <input type="file" name="attachments" id="fileInput" multiple > <br/>
+    <button>전송</button>
+</form>
+
+
+
+
+<div style="padding:10px">
+    업로드 할 첨부파일 정보 표시 (file multiple) + 삭제버튼 구현 GPT 수정본
+    <ul id="fileList">
+
+    </ul>
+
+</div>
+
+<script>
+
+    let selectedFiles = [];     // 파일을 선택하면 이 배열에 저장
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector("#fileInput").addEventListener("change", (e) => {
+            const files = e.target.files;
+            selectedFiles = selectedFiles.concat([...files]);
+            drawFileList();     // 화면에 표시될 파일 목록 갱신
+            updateInputFiles(document.querySelector("#fileInput"), selectedFiles);
+        });
+    });
+
+    function drawFileList() {
+        const fileList = document.querySelector("#fileList");
+        fileList.innerHTML = ""; // 기존 목록 초기화
+
+        selectedFiles.forEach((file, index) => {
+
+            const li = document.createElement('li');
+
+            const fileInfo = document.createElement('span');
+            fileInfo.textContent = `파일명 : ${file.name}, 파일크기 : ${formatFileSize(file.size)}` ;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = '삭제';
+            btn.addEventListener('click', () => {
+                removeFileInfo(index, document.querySelector("#fileInput"), selectedFiles);
+            });
+
+            li.appendChild(fileInfo);
+            li.appendChild(btn);
+
+            fileList.appendChild(li);
+
+
+        });
+
+    }
+
+    function removeFileInfo(index,  inputEl, files) {
+        // 배열에서 제거
+        selectedFiles.splice(index, 1);
+        //file input  갱신
+        updateInputFiles(inputEl, files);
+        // 화면 다시 그림
+        drawFileList();
+    }
+
+    //file input  재구성
+    function updateInputFiles(inputEl, files) {
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        inputEl.files = dt.files;
+    }
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+        }
+    }
+</script>
+</body>
+</html>

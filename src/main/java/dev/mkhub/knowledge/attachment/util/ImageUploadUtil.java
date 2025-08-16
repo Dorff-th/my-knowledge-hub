@@ -34,19 +34,19 @@ public class ImageUploadUtil {
 
 
 
-    //에디터 이미지 첨부, 일반 첨부 둘다 초기화
-        @PostConstruct
-        public void init() {
+
+    @PostConstruct
+    public void init() {
             initPath(imageBaseDir);
         }
 
-        private void initPath(String path) {
-            File dir = new File(path);
+    private void initPath(String path) {
+        File dir = new File(path);
             if (!dir.exists()) {
                 dir.mkdirs(); // 하위 디렉토리까지 생성
             }
-            log.info("Editor Image Upload path initialized: {}", dir.getAbsolutePath());
-        }
+        log.info("Editor Image Upload path initialized: {}", dir.getAbsolutePath());
+    }
 
     /** ✅ 단일 파일 저장 (에디터용 이미지) */
     public FileSaveResultDTO saveEditorImageFile(MultipartFile file, UploadMode mode, String identifier) {
