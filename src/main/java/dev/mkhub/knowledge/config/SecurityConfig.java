@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/download/**").permitAll()
                         .requestMatchers("/zdemo/**").permitAll()                   //테스트
                         .requestMatchers("/zdemo/**", "/zdemo_js/**").permitAll()   //테스트
+                        .requestMatchers("/board/**").hasAnyRole("USER", "ADMIN") // ✅ 로그인 필요
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

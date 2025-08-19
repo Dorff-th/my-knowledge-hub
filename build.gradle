@@ -42,6 +42,10 @@ dependencies {
 
     //유효성 체크
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //메뉴 캐싱을 위한 의존성 주입
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }
 
 // ✅ Q 클래스 경로 추가 (Gradle 8+ 방식)

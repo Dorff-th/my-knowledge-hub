@@ -33,6 +33,22 @@
             </nav>
         </div>
 
+        <!-- menu list test -->
+        <div class="flex items-center space-x-2">
+            <ul class="space-y-4">
+                <li class="px-3 py-1 border border-gray-500 text-gray-500 rounded hover:bg-blue-50 text-sm"  th:each="menu : ${menus}">
+                    <span th:if="${menu.url == null}" th:text="${menu.name}"></span>
+                    <a th:if="${menu.url != null}" th:href="${menu.url}" th:text="${menu.name}"></a>
+
+                    <ul class="space-y-4" th:if="${#lists.size(menu.children) > 0}">
+                        <li class="px-3 py-1 border border-gray-500 text-gray-500 rounded hover:bg-blue-50 text-sm" th:each="child : ${menu.children}">
+                            <a th:href="${child.url}" th:text="${child.name}"></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
         <!-- 가운데: 검색창 -->
         <form th:action="@{/search}" method="get" class="flex items-center w-full max-w-md mx-4">
             <input
