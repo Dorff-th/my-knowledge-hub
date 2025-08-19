@@ -1,0 +1,35 @@
+CREATE TABLE menu (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id BIGINT NULL,
+    name VARCHAR(100) NOT NULL,
+    url VARCHAR(255) NULL,
+    role VARCHAR(50) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    CONSTRAINT fk_parent FOREIGN KEY (parent_id) REFERENCES menu(id) ON DELETE CASCADE
+);
+
+
+
+-- ===============================
+-- ROLE_USER 메뉴
+-- ===============================
+INSERT INTO menu (id, parent_id, name, url, role, sort_order) VALUES
+(1, NULL, '대시보드', '/dashboard', 'ROLE_USER', 1),
+(2, NULL, '내 정보', NULL, 'ROLE_USER', 2),
+(3, 2, '프로필', '/profile', 'ROLE_USER', 1),
+(4, 2, '비밀번호 변경', '/password/change', 'ROLE_USER', 2),
+(5, NULL, '게시판', NULL, 'ROLE_USER', 3),
+(6, 5, '자유게시판', '/board/free', 'ROLE_USER', 1),
+(7, 5, '공지사항', '/board/notice', 'ROLE_USER', 2);
+
+-- ===============================
+-- ROLE_ADMIN 메뉴
+-- ===============================
+INSERT INTO menu (id, parent_id, name, url, role, sort_order) VALUES
+(10, NULL, '관리자 대시보드', '/admin/dashboard', 'ROLE_ADMIN', 1),
+(11, NULL, '사용자 관리', NULL, 'ROLE_ADMIN', 2),
+(12, 11, '사용자 목록', '/admin/users', 'ROLE_ADMIN', 1),
+(13, 11, '권한 관리', '/admin/roles', 'ROLE_ADMIN', 2),
+(14, NULL, '시스템 관리', NULL, 'ROLE_ADMIN', 3),
+(15, 14, '메뉴 관리', '/admin/menus', 'ROLE_ADMIN', 1),
+(16, 14, '로그 모니터', '/admin/logs', 'ROLE_ADMIN', 2);
